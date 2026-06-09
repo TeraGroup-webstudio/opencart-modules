@@ -27,6 +27,9 @@
     .info-row{display:flex;align-items:center;gap:.75rem;font-size:.9rem}
     .info-label{color:var(--muted);min-width:130px;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
     .info-val{color:var(--text);font-weight:600;font-family:'Cascadia Code','Fira Code',monospace;font-size:.85rem;background:rgba(99,102,241,.1);padding:.2rem .6rem;border-radius:6px;word-break:break-all}
+    .copy-btn{background:none;border:none;cursor:pointer;padding:.2rem .35rem;border-radius:6px;color:var(--muted);display:inline-flex;align-items:center;transition:color .15s,background .15s;flex-shrink:0}
+    .copy-btn:hover{color:var(--accent);background:rgba(99,102,241,.12)}
+    .copy-btn.copied{color:#10b981}
     footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
     @media(max-width:640px){.hero-text h1{font-size:1.25rem}.content{padding:1.5rem 1rem}}
   </style>
@@ -56,6 +59,9 @@
       <div class="info-row">
         <span class="info-label">Тестовий API ключ</span>
         <span class="info-val">2e75d2d15b46d199ac8ece171a952fc3</span>
+        <button class="copy-btn" title="Копіювати" onclick="copyKey(this,'2e75d2d15b46d199ac8ece171a952fc3')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -63,5 +69,18 @@
 </div>
 
 <footer>OpenCart Modules Collection</footer>
+<script>
+function copyKey(btn, text) {
+  navigator.clipboard.writeText(text).then(function() {
+    var svg = btn.querySelector('svg');
+    svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      svg.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+}
+</script>
 </body>
 </html>

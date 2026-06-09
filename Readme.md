@@ -18,4 +18,4 @@
 
 ## GitHub Pages
 
-Сайт доступний за адресою: `https://<username>.github.io/<repo-name>/`
+Сайт доступний за адресою: `https://teragroup-webstudio.github.io/opencart-modules/`

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCart Modules</title>
+  <style>
+    :root {
+      --bg: #080c18;
+      --bg2: #0d1225;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(99,102,241,0.45);
+      --accent: #6366f1;
+      --accent2: #8b5cf6;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      position: relative;
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      background: linear-gradient(160deg, #0f1340 0%, #1a0f40 50%, #0f1340 100%);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    header::before {
+      content:'';
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,.25) 0%, transparent 70%);
+    }
+    header .logo {
+      font-size: 2.8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 50%, #f0abfc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-top: .5rem;
+      position: relative;
+    }
+
+    /* STATS BAR */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      padding: 1.25rem 2rem;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-n { font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-l { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing:.08em; margin-top:.2rem; }
+
+    /* GRID */
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      box-shadow: 0 12px 40px rgba(99,102,241,.18);
+    }
+    .card-top { display:flex; gap:1rem; align-items:flex-start; }
+    .avatar {
+      width: 50px; height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items:center; justify-content:center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(99,102,241,.35);
+    }
+    .card-name {
+      font-size: .95rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text);
+    }
+    .card-desc {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+    .badges { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .badge {
+      font-size: .68rem;
+      padding: .2rem .55rem;
+      border-radius: 20px;
+      font-weight: 600;
+      display: flex; align-items:center; gap:.3rem;
+      white-space: nowrap;
+    }
+    .b-zip   { background:rgba(16,185,129,.12); color:#34d399; border:1px solid rgba(16,185,129,.2); }
+    .b-ocmod { background:rgba(99,102,241,.12); color:#a5b4fc; border:1px solid rgba(99,102,241,.2); }
+    .b-img   { background:rgba(245,158,11,.12); color:#fbbf24; border:1px solid rgba(245,158,11,.2); }
+    .b-pdf   { background:rgba(239,68,68,.12);  color:#f87171; border:1px solid rgba(239,68,68,.2); }
+
+    .card-actions { display:flex; gap:.6rem; margin-top:auto; }
+    .btn {
+      padding: .5rem 1rem;
+      border-radius: 8px;
+      font-size: .83rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items:center; justify-content:center; gap:.35rem;
+      transition: opacity .15s, transform .1s;
+      border: none;
+    }
+    .btn:hover { opacity:.85; transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; flex:1; }
+    .btn-buy { background:rgba(245,158,11,.15); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    @media(max-width:640px){
+      header .logo { font-size:2rem; }
+      .wrap { padding:1.5rem 1rem; }
+      .grid { grid-template-columns:1fr; }
+      .stats { gap:1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🛒 OpenCart Modules</div>
+  <p>Колекція модулів з документацією, архівами та скриншотами</p>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n">9</div><div class="stat-l">Модулів</div></div>
+  <div class="stat"><div class="stat-n">6</div><div class="stat-l">Архівів</div></div>
+  <div class="stat"><div class="stat-n">59</div><div class="stat-l">Скриншотів</div></div>
+  <div class="stat"><div class="stat-n">8</div><div class="stat-l">PDF інструкцій</div></div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+
+    <!-- OAP PRO -->
+    <a class="card" href="./OAP PRO - MULTI AJAX опції як окремі товари з автоматичним зв'язуванням/">
+      <div class="card-top">
+        <div class="avatar">🔀</div>
+        <div class="card-name">OAP PRO — MULTI AJAX опції як окремі товари з автоматичним зв'язуванням</div>
+      </div>
+      <div class="card-desc">Якщо відсутня функція isMainOapProduct — інструкція по додаванню функції вручну у файл product.php. Також зміна тексту в модифікації Default.ocmod.</div>
+      <div class="badges">
+        <span class="badge b-ocmod">⚙️ ocmod</span>
+        <span class="badge b-img">🖼 6 скриншотів</span>
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+        <span class="btn btn-buy">🛒 Купити</span>
+      </div>
+    </a>
+
+    <!-- OCFilter -->
+    <a class="card" href="./OCFilter - Модуль фільтру товарів/">
+      <div class="card-top">
+        <div class="avatar">🔍</div>
+        <div class="card-name">OCFilter — Модуль фільтру товарів</div>
+      </div>
+      <div class="card-desc">Закидуємо весь вміст папки upload. Прописуємо правильний Ліцензійний ключ і застосовуємо.</div>
+      <div class="badges">
+        <span class="badge b-zip">📦 upload.zip</span>
+        <span class="badge b-img">🖼 10 скриншотів</span>
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+        <span class="btn btn-buy">🛒 Купити</span>
+      </div>
+    </a>
+
+    <!-- One Page Checkout -->
+    <a class="card" href="./One Page Checkout - Просте оформлення замовлення 1.5/">
+      <div class="card-top">
+        <div class="avatar">🛒</div>
+        <div class="card-name">One Page Checkout — Просте оформлення замовлення 1.5</div>
+      </div>
+      <div class="card-desc">Закидуємо весь вміст папки upload. Простий і зручний одно-сторінковий чекаут для OpenCart.</div>
+      <div class="badges">
+        <span class="badge b-zip">📦 upload.zip</span>
+        <span class="badge b-img">🖼 12 скриншотів</span>
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+        <span class="btn btn-buy">🛒 Купити</span>
+      </div>
+    </a>
+
+    <!-- SAP -->
+    <a class="card" href="./SAP - Login Social Networks/">
+      <div class="card-top">
+        <div class="avatar">🌐</div>
+        <div class="card-name">SAP — Login Social Networks</div>
+      </div>
+      <div class="card-desc">Авторизація / реєстрація через соціальні мережі. One Tap Google, Popup Login/Register, GeoIP. Є інструкції для кожної соцмережі.</div>
+      <div class="badges">
+        <span class="badge b-zip">📦 upload.zip</span>
+        <span class="badge b-ocmod">⚙️ ocmod</span>
+        <span class="badge b-pdf">📄 8 PDF</span>
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+        <span class="btn btn-buy">🛒 Купити</span>
+      </div>
+    </a>
+
+    <!-- SP SEO -->
+    <a class="card" href="./SP SEO Remarketing All In One Pro 2.3.x - 3.x/">
+      <div class="card-top">
+        <div class="avatar">📊</div>
+        <div class="card-name">SP SEO Remarketing All In One Pro 2.3.x – 3.x</div>
+      </div>
+      <div class="card-desc">Google Analytics 4, динамічний ремаркетинг Google Ads, Facebook Conversions API, TikTok, Google відгуки, eSputnik, Snapchat та інше.</div>
+      <div class="badges">
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+        <span class="btn btn-buy">🛒 Купити</span>
+      </div>
+    </a>
+
+    <!-- Бонусные баллы -->
+    <a class="card" href="./Бонусные баллы (расширение функционала)/">
+      <div class="card-top">
+        <div class="avatar">⭐</div>
+        <div class="card-name">Бонусні бали — розширення функціоналу</div>
+      </div>
+      <div class="card-desc">Розширення стандартного функціоналу бонусних балів у магазині OpenCart.</div>
+      <div class="badges">
+        <span class="badge b-img">🖼 5 скриншотів</span>
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+        <span class="btn btn-buy">🛒 Купити</span>
+      </div>
+    </a>
+
+    <!-- Масове управління акціями -->
+    <a class="card" href="./Масове управління акціями/">
+      <div class="card-top">
+        <div class="avatar">🏷️</div>
+        <div class="card-name">Масове управління акціями</div>
+      </div>
+      <div class="card-desc">Завантажуємо модифікацію bulk_specials_editor_with_timer_oc30x.ocmod в адмінці через «Установка доповнень».</div>
+      <div class="badges">
+        <span class="badge b-ocmod">⚙️ ocmod</span>
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+      </div>
+    </a>
+
+    <!-- Нова пошта -->
+    <a class="card" href="./Нова пошта API - модуль доставки для OpenCart/">
+      <div class="card-top">
+        <div class="avatar">📦</div>
+        <div class="card-name">Нова пошта API — модуль доставки для OpenCart</div>
+      </div>
+      <div class="card-desc">Інтеграція з API Нової пошти для оформлення доставки прямо з адмінпанелі OpenCart.</div>
+      <div class="badges">
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+        <span class="btn btn-buy">🛒 Купити</span>
+      </div>
+    </a>
+
+    <!-- Пошук -->
+    <a class="card" href="./Пошук/">
+      <div class="card-top">
+        <div class="avatar">🔎</div>
+        <div class="card-name">Пошук — Search з автодоповненням та морфологією</div>
+      </div>
+      <div class="card-desc">Закидуємо весь вміст папки upload. Пошукова система з морфологією та релевантністю PRO + Search suggestion з автодоповненням PRO.</div>
+      <div class="badges">
+        <span class="badge b-zip">📦 upload.zip</span>
+        <span class="badge b-img">🖼 26 скриншотів</span>
+      </div>
+      <div class="card-actions">
+        <span class="btn btn-primary">Переглянути →</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<footer>OpenCart Modules Collection &nbsp;·&nbsp; GitHub Pages</footer>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+name: Update screenshot counts
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'index.html'   # не запускати повторно після коміту бота
+  workflow_dispatch:   # дозволяє запустити вручну з GitHub UI
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Count screenshots and update index.html
+        run: python3 scripts/count_screenshots.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Змін немає — коміт не потрібен."
+          else
+            git commit -m "chore: auto-update screenshot counts"
+            git push
+          fi

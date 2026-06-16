@@ -73,8 +73,60 @@
     .stat-n { font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 1; }
     .stat-l { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing:.08em; margin-top:.2rem; }
 
-    /* GRID */
+    /* LAYOUT */
     .wrap { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+    /* TEMPLATES */
+    .tpl-section { margin-bottom: 3rem; }
+    .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .tpl-card {
+      background: rgba(99,102,241,.08);
+      border: 1px solid rgba(99,102,241,.2);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: background .2s, border-color .2s, transform .15s;
+    }
+    .tpl-card:hover {
+      background: rgba(99,102,241,.14);
+      border-color: rgba(99,102,241,.45);
+      transform: translateY(-2px);
+    }
+    .tpl-icon { font-size: 2rem; flex-shrink: 0; }
+    .tpl-info { flex: 1; min-width: 0; }
+    .tpl-name { font-weight: 700; font-size: .95rem; }
+    .tpl-desc { font-size: .8rem; color: var(--muted); margin-top: .25rem; line-height: 1.4; }
+    .tpl-dl {
+      font-size: .78rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.25);
+      border-radius: 8px;
+      padding: .4rem .75rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* CATEGORY */
+    .cat-section { margin-bottom: 3rem; }
+    .cat-header {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    /* GRID */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
 
     /* CARD */
@@ -166,6 +218,8 @@
       .wrap { padding:1.5rem 1rem; }
       .grid { grid-template-columns:1fr; }
       .stats { gap:1.5rem; }
+      .tpl-grid { grid-template-columns:1fr; }
+      .tpl-card { flex-wrap:wrap; }
     }
   </style>
 </head>
@@ -177,165 +231,264 @@
 </header>
 
 <div class="stats">
-  <div class="stat"><div class="stat-n">9</div><div class="stat-l">Модулів</div></div>
-  <div class="stat"><div class="stat-n">6</div><div class="stat-l">Архівів</div></div>
-  <div class="stat"><div class="stat-n">59</div><div class="stat-l">Скриншотів</div></div>
-  <div class="stat"><div class="stat-n">8</div><div class="stat-l">PDF інструкцій</div></div>
+  <div class="stat"><div class="stat-n" id="cnt-modules">—</div><div class="stat-l">Модулів</div></div>
+  <div class="stat"><div class="stat-n" id="cnt-archives">—</div><div class="stat-l">Архівів</div></div>
+  <div class="stat"><div class="stat-n" id="cnt-screenshots">—</div><div class="stat-l">Скриншотів</div></div>
+  <div class="stat"><div class="stat-n" id="cnt-pdfs">—</div><div class="stat-l">PDF інструкцій</div></div>
 </div>
 
 <div class="wrap">
-  <div class="grid">
 
-    <!-- OAP PRO -->
-    <a class="card" href="./OAP PRO - MULTI AJAX опції як окремі товари з автоматичним зв'язуванням/">
-      <div class="card-top">
-        <div class="avatar">🔀</div>
-        <div class="card-name">OAP PRO — MULTI AJAX опції як окремі товари з автоматичним зв'язуванням</div>
-      </div>
-      <div class="card-desc">Якщо відсутня функція isMainOapProduct — інструкція по додаванню функції вручну у файл product.php. Також зміна тексту в модифікації Default.ocmod.</div>
-      <div class="badges">
-        <span class="badge b-ocmod">⚙️ ocmod</span>
-        <span class="badge b-img">🖼 6 скриншотів</span>
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-        <span class="btn btn-buy">🛒 Купити</span>
-      </div>
-    </a>
-
-    <!-- OCFilter -->
-    <a class="card" href="./OCFilter - Модуль фільтру товарів/">
-      <div class="card-top">
-        <div class="avatar">🔍</div>
-        <div class="card-name">OCFilter — Модуль фільтру товарів</div>
-      </div>
-      <div class="card-desc">Закидуємо весь вміст папки upload. Прописуємо правильний Ліцензійний ключ і застосовуємо.</div>
-      <div class="badges">
-        <span class="badge b-zip">📦 upload.zip</span>
-        <span class="badge b-img">🖼 10 скриншотів</span>
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-        <span class="btn btn-buy">🛒 Купити</span>
-      </div>
-    </a>
-
-    <!-- One Page Checkout -->
-    <a class="card" href="./One Page Checkout - Просте оформлення замовлення 1.5/">
-      <div class="card-top">
-        <div class="avatar">🛒</div>
-        <div class="card-name">One Page Checkout — Просте оформлення замовлення 1.5</div>
-      </div>
-      <div class="card-desc">Закидуємо весь вміст папки upload. Простий і зручний одно-сторінковий чекаут для OpenCart.</div>
-      <div class="badges">
-        <span class="badge b-zip">📦 upload.zip</span>
-        <span class="badge b-img">🖼 12 скриншотів</span>
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-        <span class="btn btn-buy">🛒 Купити</span>
-      </div>
-    </a>
-
-    <!-- SAP -->
-    <a class="card" href="./SAP - Login Social Networks/">
-      <div class="card-top">
-        <div class="avatar">🌐</div>
-        <div class="card-name">SAP — Login Social Networks</div>
-      </div>
-      <div class="card-desc">Авторизація / реєстрація через соціальні мережі. One Tap Google, Popup Login/Register, GeoIP. Є інструкції для кожної соцмережі.</div>
-      <div class="badges">
-        <span class="badge b-zip">📦 upload.zip</span>
-        <span class="badge b-ocmod">⚙️ ocmod</span>
-        <span class="badge b-pdf">📄 8 PDF</span>
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-        <span class="btn btn-buy">🛒 Купити</span>
-      </div>
-    </a>
-
-    <!-- SP SEO -->
-    <a class="card" href="./SP SEO Remarketing All In One Pro 2.3.x - 3.x/">
-      <div class="card-top">
-        <div class="avatar">📊</div>
-        <div class="card-name">SP SEO Remarketing All In One Pro 2.3.x – 3.x</div>
-      </div>
-      <div class="card-desc">Google Analytics 4, динамічний ремаркетинг Google Ads, Facebook Conversions API, TikTok, Google відгуки, eSputnik, Snapchat та інше.</div>
-      <div class="badges">
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-        <span class="btn btn-buy">🛒 Купити</span>
-      </div>
-    </a>
-
-    <!-- Бонусные баллы -->
-    <a class="card" href="./Бонусные баллы (расширение функционала)/">
-      <div class="card-top">
-        <div class="avatar">⭐</div>
-        <div class="card-name">Бонусні бали — розширення функціоналу</div>
-      </div>
-      <div class="card-desc">Розширення стандартного функціоналу бонусних балів у магазині OpenCart.</div>
-      <div class="badges">
-        <span class="badge b-img">🖼 5 скриншотів</span>
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-        <span class="btn btn-buy">🛒 Купити</span>
-      </div>
-    </a>
-
-    <!-- Масове управління акціями -->
-    <a class="card" href="./Масове управління акціями/">
-      <div class="card-top">
-        <div class="avatar">🏷️</div>
-        <div class="card-name">Масове управління акціями</div>
-      </div>
-      <div class="card-desc">Завантажуємо модифікацію bulk_specials_editor_with_timer_oc30x.ocmod в адмінці через «Установка доповнень».</div>
-      <div class="badges">
-        <span class="badge b-ocmod">⚙️ ocmod</span>
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-      </div>
-    </a>
-
-    <!-- Нова пошта -->
-    <a class="card" href="./Нова пошта API - модуль доставки для OpenCart/">
-      <div class="card-top">
-        <div class="avatar">📦</div>
-        <div class="card-name">Нова пошта API — модуль доставки для OpenCart</div>
-      </div>
-      <div class="card-desc">Інтеграція з API Нової пошти для оформлення доставки прямо з адмінпанелі OpenCart.</div>
-      <div class="badges">
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-        <span class="btn btn-buy">🛒 Купити</span>
-      </div>
-    </a>
-
-    <!-- Пошук -->
-    <a class="card" href="./Пошук/">
-      <div class="card-top">
-        <div class="avatar">🔎</div>
-        <div class="card-name">Пошук — Search з автодоповненням та морфологією</div>
-      </div>
-      <div class="card-desc">Закидуємо весь вміст папки upload. Пошукова система з морфологією та релевантністю PRO + Search suggestion з автодоповненням PRO.</div>
-      <div class="badges">
-        <span class="badge b-zip">📦 upload.zip</span>
-        <span class="badge b-img">🖼 26 скриншотів</span>
-      </div>
-      <div class="card-actions">
-        <span class="btn btn-primary">Переглянути →</span>
-      </div>
-    </a>
-
+  <!-- Шаблони -->
+  <div class="tpl-section">
+    <div class="cat-header">📦 Шаблони для модулів</div>
+    <div class="tpl-grid">
+      <a href="Модулі/html_template.zip" download class="tpl-card">
+        <div class="tpl-icon">📄</div>
+        <div class="tpl-info">
+          <div class="tpl-name">html_template.zip</div>
+          <div class="tpl-desc">Шаблон модуля з файлом html_template</div>
+        </div>
+        <div class="tpl-dl">⬇ Завантажити</div>
+      </a>
+      <a href="Модулі/template.zip" download class="tpl-card">
+        <div class="tpl-icon">📁</div>
+        <div class="tpl-info">
+          <div class="tpl-name">template.zip</div>
+          <div class="tpl-desc">Шаблон модуля з архітектурою папок без файлів</div>
+        </div>
+        <div class="tpl-dl">⬇ Завантажити</div>
+      </a>
+    </div>
   </div>
+
+  <!-- Особистий кабінет -->
+  <div class="cat-section" data-cat="personal">
+    <div class="cat-header">👤 Особистий кабінет</div>
+    <div class="grid">
+
+      <!-- Fauna -->
+      <a class="card" href="./Особистий кабінет/Fauna/">
+        <div class="card-top">
+          <div class="avatar">🌿</div>
+          <div class="card-name">Fauna — Особистий кабінет</div>
+        </div>
+        <div class="card-desc">Тема оформлення особистого кабінету для OpenCart.</div>
+        <div class="badges">
+          <span class="badge b-zip">📦 upload.zip</span>
+          <span class="badge b-img">🖼 6 скриншотів</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+        </div>
+      </a>
+
+      <!-- Tiara -->
+      <a class="card" href="./Особистий кабінет/Tiara/">
+        <div class="card-top">
+          <div class="avatar">👑</div>
+          <div class="card-name">Tiara — Особистий кабінет</div>
+        </div>
+        <div class="card-desc">Тема оформлення особистого кабінету для OpenCart.</div>
+        <div class="badges">
+          <span class="badge b-zip">📦 upload.zip</span>
+          <span class="badge b-img">🖼 5 скриншотів</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Модулі -->
+  <div class="cat-section" data-cat="modules">
+    <div class="cat-header">🔧 Модулі</div>
+    <div class="grid">
+
+      <!-- OAP PRO -->
+      <a class="card" href="./Модулі/OAP PRO - MULTI AJAX опції як окремі товари з автоматичним зв'язуванням/">
+        <div class="card-top">
+          <div class="avatar">🔀</div>
+          <div class="card-name">OAP PRO — MULTI AJAX опції як окремі товари з автоматичним зв'язуванням</div>
+        </div>
+        <div class="card-desc">Якщо відсутня функція isMainOapProduct — інструкція по додаванню функції вручну у файл product.php. Також зміна тексту в модифікації Default.ocmod.</div>
+        <div class="badges">
+          <span class="badge b-ocmod">⚙️ ocmod</span>
+          <span class="badge b-img">🖼 6 скриншотів</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+          <span class="btn btn-buy">🛒 Купити</span>
+        </div>
+      </a>
+
+      <!-- OCFilter -->
+      <a class="card" href="./Модулі/OCFilter - Модуль фільтру товарів/">
+        <div class="card-top">
+          <div class="avatar">🔍</div>
+          <div class="card-name">OCFilter — Модуль фільтру товарів</div>
+        </div>
+        <div class="card-desc">Закидуємо весь вміст папки upload. Прописуємо правильний Ліцензійний ключ і застосовуємо.</div>
+        <div class="badges">
+          <span class="badge b-zip">📦 upload.zip</span>
+          <span class="badge b-img">🖼 10 скриншотів</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+          <span class="btn btn-buy">🛒 Купити</span>
+        </div>
+      </a>
+
+      <!-- One Page Checkout -->
+      <a class="card" href="./Модулі/One Page Checkout - Просте оформлення замовлення 1.5/">
+        <div class="card-top">
+          <div class="avatar">🛒</div>
+          <div class="card-name">One Page Checkout — Просте оформлення замовлення 1.5</div>
+        </div>
+        <div class="card-desc">Закидуємо весь вміст папки upload. Простий і зручний одно-сторінковий чекаут для OpenCart.</div>
+        <div class="badges">
+          <span class="badge b-zip">📦 upload.zip</span>
+          <span class="badge b-img">🖼 12 скриншотів</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+          <span class="btn btn-buy">🛒 Купити</span>
+        </div>
+      </a>
+
+      <!-- SAP -->
+      <a class="card" href="./Модулі/SAP - Login Social Networks/">
+        <div class="card-top">
+          <div class="avatar">🌐</div>
+          <div class="card-name">SAP — Login Social Networks</div>
+        </div>
+        <div class="card-desc">Авторизація / реєстрація через соціальні мережі. One Tap Google, Popup Login/Register, GeoIP. Є інструкції для кожної соцмережі.</div>
+        <div class="badges">
+          <span class="badge b-zip">📦 upload.zip</span>
+          <span class="badge b-ocmod">⚙️ ocmod</span>
+          <span class="badge b-pdf">📄 8 PDF</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+          <span class="btn btn-buy">🛒 Купити</span>
+        </div>
+      </a>
+
+      <!-- SP SEO -->
+      <a class="card" href="./Модулі/SP SEO Remarketing All In One Pro 2.3.x - 3.x/">
+        <div class="card-top">
+          <div class="avatar">📊</div>
+          <div class="card-name">SP SEO Remarketing All In One Pro 2.3.x – 3.x</div>
+        </div>
+        <div class="card-desc">Google Analytics 4, динамічний ремаркетинг Google Ads, Facebook Conversions API, TikTok, Google відгуки, eSputnik, Snapchat та інше.</div>
+        <div class="badges">
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+          <span class="btn btn-buy">🛒 Купити</span>
+        </div>
+      </a>
+
+      <!-- Бонусные баллы -->
+      <a class="card" href="./Модулі/Бонусные баллы (расширение функционала)/">
+        <div class="card-top">
+          <div class="avatar">⭐</div>
+          <div class="card-name">Бонусні бали — розширення функціоналу</div>
+        </div>
+        <div class="card-desc">Розширення стандартного функціоналу бонусних балів у магазині OpenCart.</div>
+        <div class="badges">
+          <span class="badge b-img">🖼 5 скриншотів</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+          <span class="btn btn-buy">🛒 Купити</span>
+        </div>
+      </a>
+
+      <!-- Масове управління акціями -->
+      <a class="card" href="./Модулі/Масове управління акціями/">
+        <div class="card-top">
+          <div class="avatar">🏷️</div>
+          <div class="card-name">Масове управління акціями</div>
+        </div>
+        <div class="card-desc">Завантажуємо модифікацію bulk_specials_editor_with_timer_oc30x.ocmod в адмінці через «Установка доповнень».</div>
+        <div class="badges">
+          <span class="badge b-ocmod">⚙️ ocmod</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+        </div>
+      </a>
+
+      <!-- Нова пошта -->
+      <a class="card" href="./Модулі/Нова пошта API - модуль доставки для OpenCart/">
+        <div class="card-top">
+          <div class="avatar">📦</div>
+          <div class="card-name">Нова пошта API — модуль доставки для OpenCart</div>
+        </div>
+        <div class="card-desc">Інтеграція з API Нової пошти для оформлення доставки прямо з адмінпанелі OpenCart.</div>
+        <div class="badges">
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+          <span class="btn btn-buy">🛒 Купити</span>
+        </div>
+      </a>
+
+      <!-- Пошук -->
+      <a class="card" href="./Модулі/Пошук/">
+        <div class="card-top">
+          <div class="avatar">🔎</div>
+          <div class="card-name">Пошук — Search з автодоповненням та морфологією</div>
+        </div>
+        <div class="card-desc">Закидуємо весь вміст папки upload. Пошукова система з морфологією та релевантністю PRO + Search suggestion з автодоповненням PRO.</div>
+        <div class="badges">
+          <span class="badge b-zip">📦 upload.zip</span>
+          <span class="badge b-img">🖼 26 скриншотів</span>
+        </div>
+        <div class="card-actions">
+          <span class="btn btn-primary">Переглянути →</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
 </div>
 
 <footer>OpenCart Modules Collection &nbsp;·&nbsp; GitHub Pages</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Модулів — кількість карток у секції модулів
+    var modSection = document.querySelector('.cat-section[data-cat="modules"]');
+    var modCount = modSection ? modSection.querySelectorAll('.card').length : 0;
+    document.getElementById('cnt-modules').textContent = modCount;
+
+    // Архівів — сума значків b-zip та b-ocmod по всіх картках
+    var archiveCount = document.querySelectorAll('.badge.b-zip, .badge.b-ocmod').length;
+    document.getElementById('cnt-archives').textContent = archiveCount;
+
+    // Скриншотів — сума чисел із значків b-img
+    var screenshots = 0;
+    document.querySelectorAll('.badge.b-img').forEach(function (el) {
+      var m = el.textContent.match(/\d+/);
+      if (m) screenshots += parseInt(m[0], 10);
+    });
+    document.getElementById('cnt-screenshots').textContent = screenshots;
+
+    // PDF інструкцій — сума чисел із значків b-pdf
+    var pdfs = 0;
+    document.querySelectorAll('.badge.b-pdf').forEach(function (el) {
+      var m = el.textContent.match(/\d+/);
+      if (m) pdfs += parseInt(m[0], 10);
+      else pdfs += 1;
+    });
+    document.getElementById('cnt-pdfs').textContent = pdfs;
+  });
+</script>
 
 </body>
 </html>

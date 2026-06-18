@@ -1,0 +1,21 @@
+{
+  "name": "project-opencart-sync",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenCart dev watcher with FTP sync and live reload",
+  "scripts": {
+    "prepare:env": "node scripts/prepare-env.mjs",
+    "predev": "npm run prepare:env",
+    "prepull:remote": "npm run prepare:env",
+    "dev": "node scripts/dev-sync.mjs",
+    "pull:remote": "node scripts/dev-sync.mjs --pull-only"
+  },
+  "dependencies": {
+    "basic-ftp": "^5.0.5",
+    "chokidar": "^4.0.3",
+    "dotenv": "^16.6.1",
+    "minimatch": "^10.1.1",
+    "open": "^10.2.0",
+    "ws": "^8.18.3"
+  }
+}

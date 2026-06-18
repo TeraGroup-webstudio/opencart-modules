@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="../favicon.ico" class="ico">
+  <title>OpenCart FTP Live Sync</title>
+  <style>
+    :root{--bg:#080c18;--bg2:#0d1225;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--accent:#6366f1;--accent2:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--warn:#f59e0b;--green:#10b981}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .topnav{background:var(--bg2);border-bottom:1px solid var(--border);padding:.75rem 2rem}
+    .topnav a{color:var(--muted);text-decoration:none;font-size:.85rem;display:inline-flex;align-items:center;gap:.4rem;transition:color .15s}
+    .topnav a:hover{color:var(--text)}
+    .hero{padding:3rem 2rem 2rem;background:linear-gradient(160deg,#0f1340 0%,#1a0f40 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(99,102,241,.2) 0%,transparent 70%)}
+    .hero-inner{max-width:900px;margin:0 auto;position:relative;display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+    .hero-text{flex:1;min-width:200px}
+    .hero-text h1{font-size:1.6rem;font-weight:800;line-height:1.3;background:linear-gradient(135deg,#a5b4fc,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-text .sub{color:var(--muted);font-size:.85rem;margin-top:.4rem}
+    .content{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+    section{margin-bottom:2.5rem}
+    .sec-title{font-size:1rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .dl-grid{display:flex;flex-wrap:wrap;gap:.75rem}
+    .dl-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1.25rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:.875rem;transition:opacity .15s,transform .1s;border:1px solid}
+    .dl-btn:hover{opacity:.85;transform:translateY(-1px)}
+    .dl-zip{background:rgba(16,185,129,.12);color:#34d399;border-color:rgba(16,185,129,.3)}
+    .dl-size{font-size:.72rem;color:var(--muted);font-weight:400}
+    .alert{background:rgba(245,158,11,.1);border:2px solid rgba(245,158,11,.4);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:2rem;font-size:.9rem;line-height:1.7}
+    .alert-title{font-weight:800;color:var(--warn);font-size:.95rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+    .alert code{background:rgba(245,158,11,.2);color:#fbbf24;padding:.15rem .5rem;border-radius:4px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.85rem}
+    .readme{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.75rem;font-size:.875rem;line-height:1.8;color:var(--text)}
+    .readme h2{font-size:1.05rem;font-weight:700;color:#a5b4fc;margin:2rem 0 .75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+    .readme h2:first-child{margin-top:0}
+    .readme h3{font-size:.92rem;font-weight:700;color:#c4b5fd;margin:1.5rem 0 .5rem}
+    .readme p{margin:.5rem 0}
+    .readme ul,.readme ol{margin:.5rem 0 .5rem 1.5rem}
+    .readme li{margin:.3rem 0}
+    .readme code{background:rgba(99,102,241,.15);color:#a5b4fc;padding:.15rem .4rem;border-radius:4px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.82rem}
+    .readme pre{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;overflow-x:auto;margin:.75rem 0}
+    .readme pre code{background:none;color:#e2e8f0;padding:0;font-size:.82rem}
+    .readme strong{color:var(--text);font-weight:700}
+    .readme hr{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
+    .features{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-bottom:2rem}
+    .feature{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;font-size:.85rem;display:flex;align-items:flex-start;gap:.6rem}
+    .feature-icon{font-size:1.2rem;flex-shrink:0}
+    .feature-text{color:var(--muted);line-height:1.5}
+    .feature-text strong{color:var(--text);display:block;margin-bottom:.15rem}
+    footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
+    @media(max-width:640px){.hero-text h1{font-size:1.25rem}.content{padding:1.5rem 1rem}.features{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav class="topnav"><a href="../">← Головна</a></nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div style="font-size:3rem;line-height:1;flex-shrink:0">🔄</div>
+    <div class="hero-text">
+      <h1>OpenCart FTP Live Sync</h1>
+      <div class="sub">Dev watcher з FTP синхронізацією та live reload для локальної розробки OpenCart</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <section>
+    <div class="sec-title">⬇ Завантажити</div>
+    <div class="dl-grid">
+      <a href="upload.zip" download class="dl-btn dl-zip">📦 upload.zip <span class="dl-size">архів з файлами</span></a>
+    </div>
+  </section>
+
+  <div class="alert">
+    <div class="alert-title">⚠️ ВАЖЛИВО</div>
+    У файлі <code>package.json</code> у полі <code>"name"</code> замініть <code>project</code> на назву вашого проєкту.<br>
+    Наприклад, якщо проєкт називається <strong>myshop</strong>:<br>
+    <code>"name": "myshop-opencart-sync"</code><br>
+    <span style="color:var(--muted);font-size:.82rem">Формат: <code>{назва-проєкту}-opencart-sync</code></span>
+  </div>
+
+  <section>
+    <div class="sec-title">🚀 Швидкий старт</div>
+    <div class="readme">
+      <p>У файлі <code>.env.ftp.shared</code> вкажіть актуальні дані проєкту:</p>
+      <ul>
+        <li><code>LIVE_RELOAD_URL</code></li>
+        <li><code>FTP_HOST</code></li>
+        <li><code>FTP_USER</code></li>
+        <li><code>FTP_REMOTE_BASE</code></li>
+      </ul>
+      <p>Потім запустіть:</p>
+      <pre><code>npm install
+npm run dev</code></pre>
+      <p>При першому запуску консоль попросить ввести FTP-пароль — він збережеться локально у файлі <code>.env.ftp</code>.</p>
+      <hr>
+      <p><strong>Якщо підключаєтесь до FTP перенесеного сайту</strong> — у файлі <code>.env.ftp</code> вкажіть:</p>
+      <ul>
+        <li><code>LIVE_RELOAD_URL</code></li>
+        <li><code>FTP_HOST</code></li>
+        <li><code>FTP_USER</code></li>
+        <li><code>FTP_PASSWORD</code></li>
+        <li><code>FTP_REMOTE_BASE</code></li>
+      </ul>
+      <p>І потім запустіть:</p>
+      <pre><code>npm run dev</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">✨ Можливості</div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📤</div>
+        <div class="feature-text"><strong>FTP Upload</strong>Автоматичне завантаження змін на хостинг</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔁</div>
+        <div class="feature-text"><strong>Live Reload</strong>Перезавантаження браузера після збереження</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📥</div>
+        <div class="feature-text"><strong>Pull з хостингу</strong>Отримання контенту з адмінки</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🚀</div>
+        <div class="feature-text"><strong>GitHub Actions</strong>Автодеплой на хостинг</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">📖 Інструкція</div>
+    <div class="readme">
+
+      <h2>🔄 Звичний Git-процес роботи (merge)</h2>
+      <p>Щоб оновити свою робочу гілку актуальними змінами з <code>main</code>, використовуйте стандартний процес через <code>merge</code>:</p>
+      <pre><code>git checkout main
+git pull origin main
+git checkout your-branch-name
+git merge main
+git push origin your-branch-name</code></pre>
+      <p>Якщо під час злиття виникнуть конфлікти:</p>
+      <ol>
+        <li>Виправте конфлікти у відповідних файлах</li>
+        <li>Збережіть зміни</li>
+        <li>Виконайте команди:</li>
+      </ol>
+      <pre><code>git add .
+git commit
+git push origin your-branch-name</code></pre>
+      <p>Для переходу у вашу робочу гілку:</p>
+      <pre><code>git checkout your-branch-name</code></pre>
+
+      <h3>Що робить git fetch</h3>
+      <p><code>git fetch</code> завантажує нові коміти та гілки з віддаленого репозиторію, але не змінює ваші локальні файли і не зливає зміни автоматично.</p>
+      <pre><code>git fetch origin
+git checkout your-branch-name
+git merge origin/main</code></pre>
+      <p>Це зручно, коли ви хочете спочатку отримати оновлення, перевірити їх, а вже потім свідомо зробити <code>merge</code>.</p>
+
+      <hr>
+
+      <h2>Основна ідея</h2>
+      <ul>
+        <li><code>.env.ftp.shared</code> зберігається в Git і містить спільні налаштування проєкту (хост, користувач, шлях, правила синку).</li>
+        <li><code>.env.ftp</code> є локальним файлом розробника (ігнорується Git).</li>
+        <li>При першому <code>npm run dev</code> файл <code>.env.ftp</code> створюється автоматично з <code>.env.ftp.shared</code>.</li>
+      </ul>
+      <p><code>FTP_PASSWORD</code> береться в такому пріоритеті:</p>
+      <ol>
+        <li><code>FTP_PASSWORD</code> (глобальна змінна середовища)</li>
+        <li><code>FTP_PASSWORD_GLOBAL</code></li>
+        <li><code>DEV_FTP_PASSWORD</code></li>
+        <li>запит у терміналі при першому запуску</li>
+      </ol>
+      <p>Тому не потрібно пересилати <code>.env.ftp</code> між розробниками.</p>
+
+      <h2>Якщо у всіх проєктах один FTP пароль</h2>
+      <p>Задайте один глобальний пароль на машині кожного розробника:</p>
+      <pre><code>setx FTP_PASSWORD "YOUR_PASSWORD"</code></pre>
+      <p>Для кожного нового проєкту достатньо закомітити <code>.env.ftp.shared</code> і змінити:</p>
+      <ul>
+        <li><code>FTP_REMOTE_BASE</code> (обов'язково)</li>
+        <li><code>LIVE_RELOAD_URL</code> (зазвичай інший для кожного проєкту)</li>
+      </ul>
+      <p>Інші значення можна лишити спільними, якщо FTP хост і користувач однакові.</p>
+
+      <h2>Швидкий старт для розробника</h2>
+      <ol>
+        <li>Встановіть залежності:
+          <pre><code>npm install</code></pre>
+        </li>
+        <li>Рекомендовано один раз задати глобальний FTP пароль:
+          <pre><code>setx FTP_PASSWORD "YOUR_PASSWORD"</code></pre>
+          <p>Після <code>setx</code> закрийте і відкрийте термінал заново.</p>
+        </li>
+        <li>Запустіть dev-синк:
+          <pre><code>npm run dev</code></pre>
+        </li>
+      </ol>
+      <p>При першому запуску:</p>
+      <ul>
+        <li><code>.env.ftp</code> створиться автоматично;</li>
+        <li>якщо глобального пароля нема, скрипт один раз попросить <code>FTP_PASSWORD</code> і збереже його в локальний <code>.env.ftp</code>.</li>
+      </ul>
+
+      <h2>Режими синку контенту</h2>
+      <h3>CONTENT_SYNC_MODE=bidirectional</h3>
+      <ul>
+        <li>локальні зміни завантажуються на хостинг;</li>
+        <li>із хостингу робиться pull у локальний проєкт для <code>REMOTE_PULL_PATHS</code> (типово: <code>admin,catalog,system,image</code>).</li>
+      </ul>
+      <p>Рекомендовано, якщо контент додається через адмінку OpenCart.</p>
+
+      <h3>CONTENT_SYNC_MODE=push-only</h3>
+      <ul>
+        <li>тільки локально → хостинг;</li>
+        <li>автоматичного pull з хостингу немає.</li>
+      </ul>
+      <p>Використовуйте, якщо контент має лишатися тільки на хостингу.</p>
+
+      <h2>Політика для image/cache</h2>
+      <p><code>image/cache/**</code> за замовчуванням виключений і з upload, і з pull. Локальний кеш залишається чистим і не потрапляє в Git.</p>
+
+      <h2>Поведінка при видаленні файлів</h2>
+      <ul>
+        <li>Якщо локально видалити файл у відстежуваних шляхах, на хостингу він теж видаляється.</li>
+        <li>Видалення з хостингу у локальний проєкт застосовується тільки якщо увімкнено <code>REMOTE_PULL_DELETE</code>.</li>
+        <li><code>REMOTE_PULL_DELETE</code> впливає тільки на шляхи з <code>REMOTE_PULL_PATHS</code>.</li>
+      </ul>
+
+      <h2>Разовий pull з хостингу</h2>
+      <pre><code>npm run pull:remote</code></pre>
+      <p>Примітка: FTP pull синхронізує лише файли. Зміни в базі даних (налаштування модулів, контент із таблиць OpenCart) потрібно оновлювати окремо через dump/import БД.</p>
+
+      <h2>Поведінка браузера</h2>
+      <p><code>npm run dev</code> використовує Chrome Debug Protocol:</p>
+      <ul>
+        <li>відкриває або перевикористовує вкладку адмінки: <code>LIVE_RELOAD_URL/admin/</code></li>
+        <li>відкриває або перевикористовує вкладку вітрини: <code>LIVE_RELOAD_URL</code></li>
+        <li>після upload робить hard reload тільки вкладки вітрини (без кешу).</li>
+      </ul>
+
+      <h2>Перенесення на інший хостинг</h2>
+      <p>Якщо переносите сайт на новий хостинг (інші логіни/паролі), оновіть налаштування в такому порядку:</p>
+      <ol>
+        <li>Оновіть спільний FTP-конфіг у <code>.env.ftp.shared</code>:
+          <ul>
+            <li><code>FTP_HOST</code>, <code>FTP_PORT</code>, <code>FTP_USER</code>, <code>FTP_SECURE</code>, <code>FTP_REMOTE_BASE</code></li>
+            <li><code>LIVE_RELOAD_URL</code></li>
+            <li><code>FTP_PASSWORD</code> лишайте порожнім у shared-файлі</li>
+          </ul>
+        </li>
+        <li>Оновіть локальний пароль у <code>.env.ftp</code>: <code>FTP_PASSWORD=NEW_PASSWORD</code></li>
+        <li>Оновіть доступ до БД: <code>config.php</code> та <code>admin/config.php</code></li>
+        <li>Перевірте синхронізацію:
+          <pre><code>npm run pull:remote
+npm run dev</code></pre>
+        </li>
+      </ol>
+      <p>Примітка: якщо у PowerShell блокується <code>npm.ps1</code>, запускайте через:</p>
+      <pre><code>cmd /c npm run pull:remote
+cmd /c npm run dev</code></pre>
+      <p>Примітка для <code>admin/config.php</code>: якщо новий хостинг не використовує <code>CONTEXT_DOCUMENT_ROOT</code>, переключіть шлях на варіант із <code>DOCUMENT_ROOT</code>.</p>
+
+      <h2>Командний Git-процес (конфлікти)</h2>
+      <ol>
+        <li>Працюйте у feature-гілках.</li>
+        <li>Перед PR синхронізуйте гілку з <code>main</code> і вирішіть конфлікти.</li>
+        <li>Ніколи не комітьте <code>.env.ftp</code>.</li>
+        <li>Комітьте код і контент, які мають бути спільними (<code>admin</code>, <code>catalog</code>, модулі, шаблони, стилі тощо).</li>
+      </ol>
+
+      <h2>Файли цього налаштування</h2>
+      <ul>
+        <li><code>scripts/dev-sync.mjs</code> — watcher, FTP upload/pull, live reload</li>
+        <li><code>scripts/prepare-env.mjs</code> — автоматичне створення локального <code>.env.ftp</code></li>
+        <li><code>.env.ftp.shared</code> — спільний конфіг проєкту в Git</li>
+        <li><code>.env.ftp.example</code> — універсальний шаблон для нового проєкту</li>
+      </ul>
+
+      <h2>Використання в новому проєкті</h2>
+      <p>Скопіюйте:</p>
+      <ul>
+        <li><code>package.json</code></li>
+        <li><code>scripts/dev-sync.mjs</code></li>
+        <li><code>scripts/prepare-env.mjs</code></li>
+        <li><code>.env.ftp.shared</code> (з параметрами конкретного проєкту)</li>
+        <li><code>.env.ftp.example</code></li>
+      </ul>
+      <p>Потім виконайте:</p>
+      <pre><code>npm install
+npm run dev</code></pre>
+
+      <h2>.ftp-deploy-sync-state.json</h2>
+      <p><code>.ftp-deploy-sync-state.json</code> — це локальний службовий файл стану синхронізації, який використовує <code>npm run dev</code>.</p>
+      <ul>
+        <li>Зберігає метадані по кожному файлу: локальний hash, час останньої відомої зміни на FTP та джерело останнього sync (<code>upload</code>/<code>pull</code>).</li>
+        <li>Потрібен для безпечного upload: якщо файл змінився і локально, і на сервері після останнього sync, завантаження пропускається з <code>CONFLICT</code>.</li>
+        <li>Створюється та оновлюється автоматично під час <code>npm run dev</code> і <code>npm run pull:remote</code>.</li>
+        <li>Це локальний runtime-файл, його не потрібно комітити в Git.</li>
+      </ul>
+
+    </div>
+  </section>
+
+</div>
+
+<footer>OpenCart Modules Collection</footer>
+</body>
+</html>

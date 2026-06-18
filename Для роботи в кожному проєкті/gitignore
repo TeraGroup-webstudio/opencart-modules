@@ -1,0 +1,122 @@
+# =========================
+# СИСТЕМНІ ФАЙЛИ
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# ENV / ЛОКАЛЬНІ НАЛАШТУВАННЯ
+# =========================
+.env
+.env.*
+!.env.ftp.example
+!.env.ftp.shared
+config.php
+admin/config.php
+
+# =========================
+# LOGS
+# =========================
+system/storage/logs/*
+system/storage/logs/!.htaccess
+
+# =========================
+# CACHE
+# =========================
+system/storage/cache/*
+system/storage/cache/!.htaccess
+
+# OpenCart 2.x
+system/cache/*
+system/cache/!.htaccess
+
+# =========================
+# MODIFICATION CACHE
+# =========================
+system/storage/modification/*
+system/storage/modification/!.htaccess
+
+# OpenCart 2.x
+system/modification/*
+system/modification/!.htaccess
+
+# =========================
+# UPLOADS / IMAGE
+# =========================
+image/cache/*
+image/cache/!.htaccess
+
+image/catalog/!.htaccess
+image/catalog/product/*
+
+# якщо зображення повністю не зберігаємо в git
+# image/*
+
+# =========================
+# DOWNLOADS
+# =========================
+system/storage/download/*
+system/storage/download/!.htaccess
+
+# =========================
+# SESSIONS
+# =========================
+system/storage/session/*
+system/storage/session/!.htaccess
+
+# =========================
+# TEMP
+# =========================
+system/storage/upload/*
+system/storage/upload/!.htaccess
+*.tmp
+*.tmp.*
+
+# =========================
+# BACKUPS
+# =========================
+*.zip
+*.tar
+*.gz
+backup/
+backups/
+
+# =========================
+# EXPORT FILES
+# =========================
+*.xlsx
+*.xls
+*.csv
+*.xml
+*.pdf
+
+# =========================
+# NODE (якщо є)
+# =========================
+node_modules/
+npm-debug.log
+.chrome-live-reload-profile/
+.ftp-deploy-sync-state.json
+
+# =========================
+# VENDOR (якщо composer використовується на сервері)
+# =========================
+vendor/
+
+# =========================
+# LOCAL STYLE OVERRIDES
+# =========================
+
+# =========================
+# BOOTSTRAP (DO NOT TRACK)
+# =========================
+**/*bootstrap*

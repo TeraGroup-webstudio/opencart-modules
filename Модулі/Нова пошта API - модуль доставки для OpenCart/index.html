@@ -25,6 +25,11 @@
     section{margin-bottom:2.5rem}
     .sec-title{font-size:1rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
     .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .dl-grid{display:flex;flex-wrap:wrap;gap:.75rem}
+    .dl-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1.25rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:.875rem;transition:opacity .15s,transform .1s;border:1px solid}
+    .dl-btn:hover{opacity:.85;transform:translateY(-1px)}
+    .dl-zip{background:rgba(16,185,129,.12);color:#34d399;border-color:rgba(16,185,129,.3)}
+    .dl-size{font-size:.72rem;color:var(--muted);font-weight:400}
     .info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;gap:.5rem}
     .info-row{display:flex;align-items:center;gap:.75rem;font-size:.9rem}
     .info-label{color:var(--muted);min-width:130px;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
@@ -54,6 +59,13 @@
 </div>
 
 <div class="content">
+
+  <section>
+    <div class="sec-title">⬇ Завантажити</div>
+    <div class="dl-grid">
+      <a href="upload.zip" download class="dl-btn dl-zip">📦 upload.zip <span class="dl-size">файли модуля</span></a>
+    </div>
+  </section>
 
   <section>
     <div class="sec-title">🔑 Тестові дані</div>

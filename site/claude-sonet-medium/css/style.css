@@ -1,11 +1,11 @@
 /* Inter */
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter/Inter-Regular.eot');
-  src: url('/fonts/Inter/Inter-Regular.eot?#iefix')
+  src: url('../fonts/Inter/Inter-Regular.eot');
+  src: url('../fonts/Inter/Inter-Regular.eot?#iefix')
       format('embedded-opentype'),
-    url('/fonts/Inter/Inter-Regular.woff2') format('woff2'),
-    url('/fonts/Inter/Inter-Regular.woff') format('woff');
+    url('../fonts/Inter/Inter-Regular.woff2') format('woff2'),
+    url('../fonts/Inter/Inter-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -15,11 +15,11 @@
 /* Inter Tight */
 @font-face {
   font-family: 'Inter Tight';
-  src: url('/fonts/InterTight/InterTight-Regular.eot');
-  src: url('/fonts/InterTight/InterTight-Regular.eot?#iefix')
+  src: url('../fonts/InterTight/InterTight-Regular.eot');
+  src: url('../fonts/InterTight/InterTight-Regular.eot?#iefix')
       format('embedded-opentype'),
-    url('/fonts/InterTight/InterTight-Regular.woff2') format('woff2'),
-    url('/fonts/InterTight/InterTight-Regular.woff') format('woff');
+    url('../fonts/InterTight/InterTight-Regular.woff2') format('woff2'),
+    url('../fonts/InterTight/InterTight-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -27,11 +27,11 @@
 
 @font-face {
   font-family: 'Inter Tight';
-  src: url('/fonts/InterTight/InterTight-Medium.eot');
-  src: url('/fonts/InterTight/InterTight-Medium.eot?#iefix')
+  src: url('../fonts/InterTight/InterTight-Medium.eot');
+  src: url('../fonts/InterTight/InterTight-Medium.eot?#iefix')
       format('embedded-opentype'),
-    url('/fonts/InterTight/InterTight-Medium.woff2') format('woff2'),
-    url('/fonts/InterTight/InterTight-Medium.woff') format('woff');
+    url('../fonts/InterTight/InterTight-Medium.woff2') format('woff2'),
+    url('../fonts/InterTight/InterTight-Medium.woff') format('woff');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -39,11 +39,11 @@
 
 @font-face {
   font-family: 'Inter Tight';
-  src: url('/fonts/InterTight/InterTight-SemiBold.eot');
-  src: url('/fonts/InterTight/InterTight-SemiBold.eot?#iefix')
+  src: url('../fonts/InterTight/InterTight-SemiBold.eot');
+  src: url('../fonts/InterTight/InterTight-SemiBold.eot?#iefix')
       format('embedded-opentype'),
-    url('/fonts/InterTight/InterTight-SemiBold.woff2') format('woff2'),
-    url('/fonts/InterTight/InterTight-SemiBold.woff') format('woff');
+    url('../fonts/InterTight/InterTight-SemiBold.woff2') format('woff2'),
+    url('../fonts/InterTight/InterTight-SemiBold.woff') format('woff');
   font-weight: 600;
   font-style: normal;
   font-display: swap;

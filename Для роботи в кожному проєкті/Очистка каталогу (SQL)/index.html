@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="../../favicon.ico" class="ico">
+  <title>Очистка каталогу OpenCart (SQL)</title>
+  <style>
+    :root{--bg:#080c18;--bg2:#0d1225;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--accent:#6366f1;--accent2:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--warn:#f59e0b;--green:#10b981;--red:#f87171}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .topnav{background:var(--bg2);border-bottom:1px solid var(--border);padding:.75rem 2rem}
+    .topnav a{color:var(--muted);text-decoration:none;font-size:.85rem;display:inline-flex;align-items:center;gap:.4rem;transition:color .15s}
+    .topnav a:hover{color:var(--text)}
+    .hero{padding:3rem 2rem 2rem;background:linear-gradient(160deg,#0f1340 0%,#1a0f40 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(99,102,241,.2) 0%,transparent 70%)}
+    .hero-inner{max-width:900px;margin:0 auto;position:relative;display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+    .hero-text{flex:1;min-width:200px}
+    .hero-text h1{font-size:1.6rem;font-weight:800;line-height:1.3;background:linear-gradient(135deg,#a5b4fc,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-text .sub{color:var(--muted);font-size:.85rem;margin-top:.4rem}
+    .content{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+    section{margin-bottom:2.5rem}
+    .sec-title{font-size:1rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border);min-width:2rem}
+    .sec-title .fname{text-transform:none;letter-spacing:0;background:rgba(99,102,241,.15);color:#a5b4fc;padding:.1rem .45rem;border-radius:4px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.8rem}
+    .lead{color:var(--muted);font-size:.875rem;line-height:1.7;margin:-.25rem 0 1rem}
+    .dl-grid{display:flex;flex-wrap:wrap;gap:.75rem}
+    .dl-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1.25rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:.875rem;transition:opacity .15s,transform .1s;border:1px solid}
+    .dl-btn:hover{opacity:.85;transform:translateY(-1px)}
+    .dl-sql{background:rgba(99,102,241,.12);color:#a5b4fc;border-color:rgba(99,102,241,.3)}
+    .dl-size{font-size:.72rem;color:var(--muted);font-weight:400}
+    .alert{background:rgba(245,158,11,.1);border:2px solid rgba(245,158,11,.4);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:2rem;font-size:.9rem;line-height:1.7}
+    .alert-title{font-weight:800;color:var(--warn);font-size:.95rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+    .alert code,.readme code{background:rgba(99,102,241,.15);color:#a5b4fc;padding:.15rem .4rem;border-radius:4px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.82rem}
+    .alert code{background:rgba(245,158,11,.2);color:#fbbf24}
+    .readme{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.75rem;font-size:.875rem;line-height:1.8;color:var(--text)}
+    .readme h3{font-size:.92rem;font-weight:700;color:#c4b5fd;margin:1.25rem 0 .5rem}
+    .readme h3:first-child{margin-top:0}
+    .readme p{margin:.5rem 0}
+    .readme ul,.readme ol{margin:.5rem 0 .5rem 1.5rem}
+    .readme li{margin:.3rem 0}
+    .readme strong{color:var(--text);font-weight:700}
+    .readme table{width:100%;border-collapse:collapse;font-size:.84rem}
+    .readme th,.readme td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--border);vertical-align:top}
+    .readme th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.4rem;font-size:.86rem;line-height:1.7}
+    .box h3{font-size:.9rem;margin-bottom:.5rem}
+    .box ul{margin-left:1.2rem}
+    .box-del h3{color:var(--red)} .box-keep h3{color:#34d399}
+    .codebox{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.4)}
+    .codebar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;padding:.6rem .8rem .6rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+    .codename{font-family:'Cascadia Code','Fira Code',monospace;font-size:.82rem;color:#c4b5fd}
+    .codeactions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .cbtn{font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.42rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);text-decoration:none;transition:background .15s,border-color .15s,color .15s}
+    .cbtn:hover{border-color:rgba(99,102,241,.5);background:rgba(99,102,241,.12)}
+    .cbtn-copy{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.45);color:#c7d2fe}
+    .cbtn-copy.done{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.45);color:#34d399}
+    .codebox pre{margin:0;padding:1rem 1.25rem;overflow:auto;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:.78rem;line-height:1.6;color:#e2e8f0;tab-size:2}
+    .codebox pre.collapsed{max-height:420px}
+    .codebox pre{scrollbar-color:#334155 transparent;scrollbar-width:thin}
+    .codebox pre::-webkit-scrollbar{width:10px;height:10px}
+    .codebox pre::-webkit-scrollbar-track{background:transparent}
+    .codebox pre::-webkit-scrollbar-thumb{background:#334155;border-radius:6px;border:2px solid #05070f}
+    .codebox pre::-webkit-scrollbar-corner{background:transparent}
+    .codebox pre .c{color:#64748b;font-style:italic}
+    .codebox pre .s{color:#86efac}
+    .codebox pre .i{color:#fcd34d}
+    .codebox pre .k{color:#c4b5fd;font-weight:600}
+    footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
+    @media(max-width:640px){.hero{padding:2rem 1rem 1.5rem}.hero-text h1{font-size:1.25rem}.content{padding:1.5rem 1rem}.two{grid-template-columns:1fr}.topnav{padding:.75rem 1rem}.readme{padding:1.1rem}.readme table{display:block;overflow-x:auto}}
+  </style>
+</head>
+<body>
+
+<nav class="topnav"><a href="../../">← Головна</a></nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div style="font-size:3rem;line-height:1;flex-shrink:0">🧹</div>
+    <div class="hero-text">
+      <h1>Очистка каталогу OpenCart (SQL)</h1>
+      <div class="sub">Видалення всіх товарів і їхніх зв’язків одним імпортом у phpMyAdmin. OpenCart 3.0.x / ocStore 3.x, префікс таблиць визначається автоматично.</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <section>
+    <div class="sec-title">⬇ Завантажити</div>
+    <div class="dl-grid">
+      <a href="00_cleanup_all.sql" download class="dl-btn dl-sql">🧹 00_cleanup_all.sql <span class="dl-size">повна очистка каталогу · 27 КБ</span></a>
+      <a href="00_cleanup_orphans.sql" download class="dl-btn dl-sql">🧽 00_cleanup_orphans.sql <span class="dl-size">тільки хвости · 17.8 КБ</span></a>
+    </div>
+  </section>
+
+  <div class="alert">
+    <div class="alert-title">⚠️ ВАЖЛИВО</div>
+    Перед імпортом зробіть бекап бази: <strong>phpMyAdmin → Експорт → Швидкий → SQL</strong>. Видалення незворотне.
+  </div>
+
+  <section>
+    <div class="sec-title">🚀 Як використати</div>
+    <div class="readme">
+      <ol>
+        <li>Зробіть бекап бази.</li>
+        <li>phpMyAdmin → виберіть базу сайту → <strong>Імпорт</strong> → виберіть файл → <strong>Вперед</strong>.<br>
+          Або вкладка <strong>SQL</strong> → кнопка «Скопіювати» нижче → вставити → <strong>Вперед</strong>. Вставляйте <strong>весь</strong> файл цілком.</li>
+        <li>Перевірте вивід: на початку — знайдений префікс таблиць, в кінці — звіт, що і скільки видалено.</li>
+        <li>Очистіть кеш: <code>system/storage/cache/</code>, <code>image/cache/</code> і Розширення → Модифікатори → «Оновити».</li>
+        <li>Виберіть заново товари в модулях зі списками («Рекомендовані», слайдери, меню) — там старі ID зберігаються в налаштуваннях.</li>
+      </ol>
+      <h3>Префікс таблиць</h3>
+      <p>Редагувати нічого не треба — файл сам знаходить префікс (<code>oc_</code>, <code>shop_</code>…). Якщо в одній базі кілька магазинів, імпорт зупиниться з повідомленням «Префікс таблиць не визначено…» і <strong>нічого не видалить</strong>. Тоді впишіть префікс (як <code>DB_PREFIX</code> у <code>config.php</code>) у перший рядок файлу і імпортуйте ще раз:</p>
+      <p><code>SET @p_manual = 'oc_';</code></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">🗂 Що видаляється (<code class="fname">00_cleanup_all.sql</code>)</div>
+    <div class="two">
+      <div class="box box-del">
+        <h3>❌ Видаляється</h3>
+        <ul>
+          <li>Товари і <strong>всі</strong> таблиці <code>product_*</code>, у т.ч. модулів</li>
+          <li>Категорії і всі <code>category_*</code></li>
+          <li>Характеристики, фільтри, опції, виробники, файли</li>
+          <li>Відгуки, кошики, списки бажань, купони на товари</li>
+          <li>OCFilter (крім налаштувань), hpmodel, Google Shopping</li>
+          <li>ЧПУ товарів, категорій, виробників, сторінок OCFilter</li>
+          <li>Замовлення, повернення, лічильники панелі</li>
+        </ul>
+      </div>
+      <div class="box box-keep">
+        <h3>✅ Залишається</h3>
+        <ul>
+          <li>Налаштування, мови, валюти, країни</li>
+          <li>Інформаційні сторінки та їхні ЧПУ</li>
+          <li>Банери, модулі, макети, тема</li>
+          <li>Користувачі адмінки</li>
+          <li>Покупці і блог — можна теж видалити: розкоментуйте блоки 3 і 4 у файлі</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="code-0">
+    <div class="sec-title">🧹 Повна очистка каталогу — <code class="fname">00_cleanup_all.sql</code></div>
+    <p class="lead">Видаляє всі товари і всі їхні зв’язки, категорії, характеристики, фільтри, опції, виробників, дані OCFilter, замовлення — і одразу прибирає хвости.</p>
+    <div class="codebox">
+      <div class="codebar">
+        <span class="codename">📄 00_cleanup_all.sql <span class="dl-size">459 рядків · 27 КБ</span></span>
+        <span class="codeactions">
+          <button type="button" class="cbtn" data-toggle="code-0-pre">↕ Розгорнути</button>
+          <a class="cbtn" href="00_cleanup_all.sql" download>⬇ Завантажити</a>
+          <button type="button" class="cbtn cbtn-copy" data-copy="code-0-pre">📋 Скопіювати</button>
+        </span>
+      </div>
+      <pre id="code-0-pre" class="collapsed"><code><span class="c">-- =====================================================================</span>
+<span class="c">-- OpenCart 3.0.x / ocStore 3.x — ПОВНА ОЧИСТКА КАТАЛОГУ одним файлом</span>
+<span class="c">--</span>
+<span class="c">-- Видаляє всі товари і всі їхні зв'язки (описи, фото, опції, акції, ЧПУ,</span>
+<span class="c">-- таблиці модулів), категорії, характеристики, фільтри, опції, виробників,</span>
+<span class="c">-- дані OCFilter (крім налаштувань), замовлення, а потім прибирає хвости.</span>
+<span class="c">-- Тестові товари НЕ додає.</span>
+<span class="c">--</span>
+<span class="c">-- ⚠️ ПЕРЕД ІМПОРТОМ зробіть бекап: phpMyAdmin → Експорт → Швидкий → SQL.</span>
+<span class="c">--</span>
+<span class="c">-- Префікс таблиць визначається АВТОМАТИЧНО. Якщо в базі кілька магазинів</span>
+<span class="c">-- з різними префіксами — впишіть потрібний у @p_manual нижче.</span>
+<span class="c">-- Якщо префікс не визначено, імпорт зупиниться і НІЧОГО не буде видалено.</span>
+<span class="c">--</span>
+<span class="c">-- Не видаляються: покупці і блог (див. блоки 3 і 4 нижче, вмикаються</span>
+<span class="c">-- розкоментуванням), налаштування, мови, валюти, інформаційні сторінки,</span>
+<span class="c">-- банери, модулі, користувачі адмінки.</span>
+<span class="c">--</span>
+<span class="c">-- Імпорт: phpMyAdmin → Імпорт → цей файл → Вперед.</span>
+<span class="c">-- =====================================================================</span>
+
+<span class="k">SET</span> @p_manual = <span class="s">''</span>;   <span class="c">-- наприклад 'oc_'; порожньо = автовизначення</span>
+
+<span class="k">SET</span> <span class="k">NAMES</span> utf8mb4;
+
+<span class="c">-- Автовизначення: префікс, для якого існують і product_to_category, і setting, і product</span>
+<span class="k">SET</span> @p = <span class="k">NULL</span>;
+<span class="k">SELECT</span> <span class="k">IF</span>(<span class="k">COUNT</span>(*) = 1, <span class="k">MIN</span>(c.pfx), <span class="k">NULL</span>) <span class="k">INTO</span> @p
+<span class="k">FROM</span> (
+  <span class="k">SELECT</span> <span class="k">LEFT</span>(t.TABLE_NAME, <span class="k">CHAR_LENGTH</span>(t.TABLE_NAME) - <span class="k">CHAR_LENGTH</span>(<span class="s">'product_to_category'</span>)) <span class="k">AS</span> pfx
+  <span class="k">FROM</span> information_schema.TABLES t
+  <span class="k">WHERE</span> t.TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> t.TABLE_NAME <span class="k">LIKE</span> <span class="s">'%product\_to\_category'</span>
+) c
+<span class="k">WHERE</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES s
+              <span class="k">WHERE</span> s.TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> s.TABLE_NAME = <span class="k">CONCAT</span>(c.pfx, <span class="s">'setting'</span>))
+  <span class="k">AND</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES s
+              <span class="k">WHERE</span> s.TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> s.TABLE_NAME = <span class="k">CONCAT</span>(c.pfx, <span class="s">'product'</span>));
+<span class="k">SET</span> @p = <span class="k">IF</span>(@p_manual &lt;&gt; <span class="s">''</span>, @p_manual, @p);
+
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_check_prefix;
+<span class="k">DELIMITER</span> $$
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_check_prefix()
+<span class="k">BEGIN</span>
+  <span class="k">IF</span> @p <span class="k">IS</span> <span class="k">NULL</span> <span class="k">OR</span> <span class="k">NOT</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+                               <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, <span class="s">'product'</span>)) <span class="k">THEN</span>
+    <span class="k">SIGNAL</span> <span class="k">SQLSTATE</span> <span class="s">'45000'</span>
+      <span class="k">SET</span> <span class="k">MESSAGE_TEXT</span> = <span class="s">'Префікс таблиць не визначено: впишіть його в @p_manual (як DB_PREFIX). Нічого не видалено.'</span>;
+  <span class="k">END</span> <span class="k">IF</span>;
+<span class="k">END</span>$$
+<span class="k">DELIMITER</span> ;
+<span class="k">CALL</span> lp_check_prefix();
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_check_prefix;
+
+<span class="k">SELECT</span> @p <span class="k">AS</span> <span class="i">`префікс таблиць`</span>;
+
+<span class="c">-- =====================================================================</span>
+<span class="c">-- OpenCart 3.0.x / ocStore 3.x — повна очистка каталогу</span>
+<span class="c">--</span>
+<span class="c">-- ⚠️ ПЕРЕД ЗАПУСКОМ зробіть бекап: phpMyAdmin → Експорт → Швидкий → SQL.</span>
+<span class="c">--</span>
+<span class="c">-- Префікс таблиць задається ОДИН раз нижче (@p). Він має збігатися з</span>
+<span class="c">-- DB_PREFIX у config.php проєкту.</span>
+<span class="c">--</span>
+<span class="c">-- Видаляє: товари і всі таблиці product_*, категорії і category_*,</span>
+<span class="c">-- атрибути, фільтри, опції, виробників, файли для завантаження, відгуки,</span>
+<span class="c">-- дані OCFilter (крім налаштувань), кошики, списки бажань, SEO URL каталогу,</span>
+<span class="c">-- а також типові таблиці модулів (hpmodel, kjseries, google, маркетплейси).</span>
+<span class="c">-- Таблиці шукаються за шаблоном, тому кастомні product_*/category_* модулів</span>
+<span class="c">-- іншого проєкту теж очищаються. Неіснуючі таблиці пропускаються.</span>
+<span class="c">--</span>
+<span class="c">-- Блоки "ЗАМОВЛЕННЯ", "ПОКУПЦІ", "БЛОГ" вмикаються/вимикаються коментуванням CALL.</span>
+<span class="c">-- Запуск: phpMyAdmin → вкладка SQL → вставити весь файл → Вперед.</span>
+<span class="c">-- =====================================================================</span>
+
+<span class="c">-- @p визначено на початку файлу</span>
+
+<span class="k">SET</span> <span class="k">NAMES</span> utf8mb4;
+<span class="k">SET</span> <span class="k">FOREIGN_KEY_CHECKS</span> = 0;
+
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_truncate_list;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_truncate_like;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_run_if_exists;
+
+<span class="k">DELIMITER</span> $$
+
+<span class="c">-- TRUNCATE таблиць зі списку через кому (назви БЕЗ префікса), якщо вони існують</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_truncate_list(<span class="k">IN</span> p_list <span class="k">TEXT</span> <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4)
+<span class="k">BEGIN</span>
+  <span class="k">DECLARE</span> v_rest <span class="k">TEXT</span> <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4;
+  <span class="k">DECLARE</span> v_table <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4;
+
+  <span class="c">-- прибираємо переноси рядків, табуляцію і пробіли зі списку</span>
+  <span class="k">SET</span> v_rest = <span class="k">REPLACE</span>(<span class="k">REPLACE</span>(<span class="k">REPLACE</span>(<span class="k">REPLACE</span>(p_list, <span class="s">'\r'</span>, <span class="s">''</span>), <span class="s">'\n'</span>, <span class="s">''</span>), <span class="s">'\t'</span>, <span class="s">''</span>), <span class="s">' '</span>, <span class="s">''</span>);
+
+  <span class="k">WHILE</span> <span class="k">CHAR_LENGTH</span>(v_rest) &gt; 0 <span class="k">DO</span>
+    <span class="k">SET</span> v_table = <span class="k">CONCAT</span>(@p, <span class="k">SUBSTRING_INDEX</span>(v_rest, <span class="s">','</span>, 1));
+    <span class="k">IF</span> <span class="k">LOCATE</span>(<span class="s">','</span>, v_rest) &gt; 0 <span class="k">THEN</span>
+      <span class="k">SET</span> v_rest = <span class="k">SUBSTRING</span>(v_rest, <span class="k">LOCATE</span>(<span class="s">','</span>, v_rest) + 1);
+    <span class="k">ELSE</span>
+      <span class="k">SET</span> v_rest = <span class="s">''</span>;
+    <span class="k">END</span> <span class="k">IF</span>;
+
+    <span class="k">IF</span> v_table &lt;&gt; @p <span class="k">AND</span> <span class="k">EXISTS</span> (
+      <span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+      <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = v_table
+    ) <span class="k">THEN</span>
+      <span class="k">SET</span> @lp_sql = <span class="k">CONCAT</span>(<span class="s">'TRUNCATE TABLE `'</span>, v_table, <span class="s">'`'</span>);
+      <span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+      <span class="k">EXECUTE</span> lp_stmt;
+      <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+    <span class="k">END</span> <span class="k">IF</span>;
+  <span class="k">END</span> <span class="k">WHILE</span>;
+<span class="k">END</span>$$
+
+<span class="c">-- TRUNCATE усіх таблиць, назва яких (без префікса) підходить під LIKE-шаблон,</span>
+<span class="c">-- крім тих, що підходять під p_except (порожній рядок = без винятків)</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_truncate_like(<span class="k">IN</span> p_like <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_except <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4)
+<span class="k">BEGIN</span>
+  <span class="k">DECLARE</span> v_done <span class="k">INT</span> <span class="k">DEFAULT</span> 0;
+  <span class="k">DECLARE</span> v_table <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4;
+  <span class="k">DECLARE</span> cur <span class="k">CURSOR</span> <span class="k">FOR</span>
+    <span class="k">SELECT</span> TABLE_NAME <span class="k">FROM</span> information_schema.TABLES
+    <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>()
+      <span class="k">AND</span> TABLE_TYPE = <span class="s">'BASE TABLE'</span>
+      <span class="k">AND</span> TABLE_NAME <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), p_like)
+      <span class="k">AND</span> (p_except = <span class="s">''</span> <span class="k">OR</span> TABLE_NAME <span class="k">NOT</span> <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), p_except));
+  <span class="k">DECLARE</span> <span class="k">CONTINUE</span> <span class="k">HANDLER</span> <span class="k">FOR</span> <span class="k">NOT</span> <span class="k">FOUND</span> <span class="k">SET</span> v_done = 1;
+
+  <span class="k">OPEN</span> cur;
+  read_loop: <span class="k">LOOP</span>
+    <span class="k">FETCH</span> cur <span class="k">INTO</span> v_table;
+    <span class="k">IF</span> v_done <span class="k">THEN</span>
+      <span class="k">LEAVE</span> read_loop;
+    <span class="k">END</span> <span class="k">IF</span>;
+    <span class="k">SET</span> @lp_sql = <span class="k">CONCAT</span>(<span class="s">'TRUNCATE TABLE `'</span>, v_table, <span class="s">'`'</span>);
+    <span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+    <span class="k">EXECUTE</span> lp_stmt;
+    <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+  <span class="k">END</span> <span class="k">LOOP</span>;
+  <span class="k">CLOSE</span> cur;
+<span class="k">END</span>$$
+
+<span class="c">-- Виконує запит, якщо таблиця існує. У запиті {p} замінюється на префікс</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_run_if_exists(<span class="k">IN</span> p_table <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_sql <span class="k">TEXT</span> <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4)
+<span class="k">BEGIN</span>
+  <span class="k">IF</span> <span class="k">EXISTS</span> (
+    <span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+    <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, p_table)
+  ) <span class="k">THEN</span>
+    <span class="k">SET</span> @lp_sql = <span class="k">REPLACE</span>(p_sql, <span class="s">'{p}'</span>, @p);
+    <span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+    <span class="k">EXECUTE</span> lp_stmt;
+    <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+  <span class="k">END</span> <span class="k">IF</span>;
+<span class="k">END</span>$$
+
+<span class="k">DELIMITER</span> ;
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 1. КАТАЛОГ</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- Усі таблиці товарів і категорій (включно з кастомними модулів)</span>
+<span class="k">CALL</span> lp_truncate_list(<span class="s">'product, category'</span>);
+<span class="k">CALL</span> lp_truncate_like(<span class="s">'product\\_%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_truncate_like(<span class="s">'category\\_%'</span>, <span class="s">''</span>);
+
+<span class="c">-- Довідники каталогу</span>
+<span class="k">CALL</span> lp_truncate_list(<span class="s">'</span>
+  attribute, attribute_description, attribute_group, attribute_group_description,
+  filter, filter_description, filter_group, filter_group_description,
+  option, option_description, option_value, option_value_description,
+  manufacturer, manufacturer_description, manufacturer_to_store, manufacturer_to_layout,
+  download, download_description,
+  review,
+  coupon_product, coupon_category,
+  cart, simple_cart, customer_wishlist,
+  hpmodel_links, hpmodel_product_hidden, kjseries_product_hidden,
+  google_base_category_to_category,
+  googleshopping_product, googleshopping_product_status, googleshopping_product_target,
+  amazon_product_link, amazonus_product_link, ebay_listing, ebay_listing_pending,
+  ebay_stock_reserve, etsy_listing,
+  article_related_product
+<span class="s">');</span>
+
+<span class="c">-- OCFilter (будь-яка версія): усе, крім налаштувань</span>
+<span class="k">CALL</span> lp_truncate_like(<span class="s">'ocfilter\\_%'</span>, <span class="s">'ocfilter\\_setting%'</span>);
+
+<span class="c">-- SEO URL товарів, категорій і виробників (інформаційні сторінки, блог тощо залишаються)</span>
+<span class="k">CALL</span> lp_run_if_exists(<span class="s">'seo_url'</span>,
+  <span class="s">'DELETE FROM `{p}seo_url` WHERE `query` LIKE ''product\_id=%'' OR `query` LIKE ''category\_id=%'' OR `query` LIKE ''manufacturer\_id=%'' OR `query` LIKE ''path=%'' OR `query` LIKE ''ocfilter\_page\_id=%'''</span>);
+<span class="k">CALL</span> lp_run_if_exists(<span class="s">'url_alias'</span>,
+  <span class="s">'DELETE FROM `{p}url_alias` WHERE `query` LIKE ''product_id=%'' OR `query` LIKE ''category_id=%'' OR `query` LIKE ''manufacturer_id=%'''</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 2. ЗАМОВЛЕННЯ, ПОВЕРНЕННЯ, ІСТОРІЯ КУПОНІВ/СЕРТИФІКАТІВ</span>
+<span class="c">--    (закоментуйте обидва CALL нижче, якщо замовлення треба зберегти)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_truncate_list(<span class="s">'</span>
+  order, order_product, order_option, order_total, order_history,
+  order_voucher, order_download, order_fraud, order_pending,
+  order_recurring, order_recurring_transaction,
+  return, return_history,
+  coupon_history, voucher_history,
+  amazon_order, amazonus_order, ebay_order, etsy_order, fba_order, fba_order_fulfillment
+<span class="s">');</span>
+<span class="c">-- Лічильники на панелі стану</span>
+<span class="k">CALL</span> lp_run_if_exists(<span class="s">'statistics'</span>, <span class="s">'UPDATE `{p}statistics` SET `value` = 0'</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 3. ПОКУПЦІ (за замовчуванням ВИМКНЕНО — приберіть "-- " перед рядками CALL)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- CALL lp_truncate_list('address, affiliate_activity, affiliate_transaction');</span>
+<span class="c">-- CALL lp_truncate_like('customer%', 'customer\\_group%');</span>
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 4. БЛОГ / СТАТТІ (за замовчуванням ВИМКНЕНО — приберіть "-- " перед рядками)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- CALL lp_truncate_list('article, blog_category, blog_related, review_article');</span>
+<span class="c">-- CALL lp_truncate_like('article\\_%', '');</span>
+<span class="c">-- CALL lp_truncate_like('blog\\_category\\_%', '');</span>
+<span class="c">-- CALL lp_truncate_like('oct\\_blog%', '');</span>
+<span class="c">-- CALL lp_run_if_exists('seo_url', 'DELETE FROM `{p}seo_url` WHERE `query` LIKE ''article_id=%'' OR `query` LIKE ''blog_category_id=%''');</span>
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_truncate_list;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_truncate_like;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_run_if_exists;
+<span class="k">SET</span> <span class="k">FOREIGN_KEY_CHECKS</span> = 1;
+
+<span class="c">-- Перевірка: усе має бути 0</span>
+<span class="k">SET</span> @lp_sql = <span class="k">REPLACE</span>(<span class="s">'SELECT</span>
+  (<span class="k">SELECT</span> <span class="k">COUNT</span>(*) <span class="k">FROM</span> <span class="i">`{p}product`</span>)      <span class="k">AS</span> products,
+  (<span class="k">SELECT</span> <span class="k">COUNT</span>(*) <span class="k">FROM</span> <span class="i">`{p}category`</span>)     <span class="k">AS</span> categories,
+  (<span class="k">SELECT</span> <span class="k">COUNT</span>(*) <span class="k">FROM</span> <span class="i">`{p}attribute`</span>)    <span class="k">AS</span> attributes,
+  (<span class="k">SELECT</span> <span class="k">COUNT</span>(*) <span class="k">FROM</span> <span class="i">`{p}filter`</span>)       <span class="k">AS</span> filters,
+  (<span class="k">SELECT</span> <span class="k">COUNT</span>(*) <span class="k">FROM</span> <span class="i">`{p}manufacturer`</span>) <span class="k">AS</span> manufacturers<span class="s">', '</span>{p}<span class="s">', @p);</span>
+<span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+<span class="k">EXECUTE</span> lp_stmt;
+<span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+
+
+<span class="c">-- =====================================================================</span>
+<span class="c">-- OpenCart 3.0.x / ocStore 3.x — очистка «хвостів» (осиротілих записів)</span>
+<span class="c">--</span>
+<span class="c">-- Для ситуації: товари/категорії видалили через адмінку, а в таблицях</span>
+<span class="c">-- модулів, описах, ЧПУ тощо лишилися рядки зі старими ID.</span>
+<span class="c">-- Живі товари, категорії, статті НЕ видаляються — лише записи, що</span>
+<span class="c">-- посилаються на те, чого вже не існує.</span>
+<span class="c">--</span>
+<span class="c">-- ⚠️ ПЕРЕД ЗАПУСКОМ зробіть бекап: phpMyAdmin → Експорт → Швидкий → SQL.</span>
+<span class="c">--</span>
+<span class="c">-- Префікс таблиць задається ОДИН раз нижче (@p) — як DB_PREFIX у config.php.</span>
+<span class="c">-- В кінці виводиться звіт: яка таблиця, що саме і скільки рядків видалено.</span>
+<span class="c">-- Історія замовлень і повернень (order*, return*) не чіпається ніколи.</span>
+<span class="c">-- =====================================================================</span>
+
+<span class="c">-- @p визначено на початку файлу</span>
+
+<span class="k">SET</span> <span class="k">NAMES</span> utf8mb4;
+
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_exec;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_orphans;
+<span class="k">DROP</span> <span class="k">TEMPORARY</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_report;
+<span class="k">CREATE</span> <span class="k">TEMPORARY</span> <span class="k">TABLE</span> lp_report (
+  tbl <span class="k">VARCHAR</span>(64) <span class="k">NOT</span> <span class="k">NULL</span>,
+  what <span class="k">VARCHAR</span>(255) <span class="k">NOT</span> <span class="k">NULL</span>,
+  removed <span class="k">INT</span> <span class="k">NOT</span> <span class="k">NULL</span>
+) <span class="k">DEFAULT</span> CHARSET=utf8mb4;
+
+<span class="k">DELIMITER</span> $$
+
+<span class="c">-- Виконує запит, якщо існують обидві таблиці (назви БЕЗ префікса; p_need може бути '').</span>
+<span class="c">-- У запиті {p} замінюється на префікс. Кількість змінених рядків пишеться у звіт.</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_exec(<span class="k">IN</span> p_table <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_need <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_what <span class="k">VARCHAR</span>(255) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_sql <span class="k">TEXT</span> <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4)
+<span class="k">BEGIN</span>
+  <span class="k">DECLARE</span> v_rows <span class="k">INT</span> <span class="k">DEFAULT</span> 0;
+  <span class="k">IF</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+             <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, p_table))
+     <span class="k">AND</span> (p_need = <span class="s">''</span> <span class="k">OR</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+             <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, p_need))) <span class="k">THEN</span>
+    <span class="k">SET</span> @lp_sql = <span class="k">REPLACE</span>(p_sql, <span class="s">'{p}'</span>, @p);
+    <span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+    <span class="k">EXECUTE</span> lp_stmt;
+    <span class="k">SET</span> v_rows = ROW_COUNT();
+    <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+    <span class="k">INSERT</span> <span class="k">INTO</span> lp_report <span class="k">VALUES</span> (<span class="k">CONCAT</span>(@p, p_table), p_what, v_rows);
+  <span class="k">END</span> <span class="k">IF</span>;
+<span class="k">END</span>$$
+
+<span class="c">-- Для КОЖНОЇ таблиці, що має колонку p_col і чия назва (без префікса) підходить</span>
+<span class="c">-- під LIKE p_like, але НЕ під REGEXP p_except, видаляє рядки, де p_col &lt;&gt; 0</span>
+<span class="c">-- і такого значення немає в p_entity.p_entity_col.</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_orphans(
+  <span class="k">IN</span> p_col <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_entity <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_entity_col <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4,
+  <span class="k">IN</span> p_like <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_except <span class="k">VARCHAR</span>(128) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4
+)
+<span class="k">BEGIN</span>
+  <span class="k">DECLARE</span> v_done <span class="k">INT</span> <span class="k">DEFAULT</span> 0;
+  <span class="k">DECLARE</span> v_table <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4;
+  <span class="k">DECLARE</span> v_rows <span class="k">INT</span>;
+  <span class="c">-- Порожній REGEXP падає на MySQL 5.7 / старих MariaDB (#1139), тому</span>
+  <span class="c">-- "без винятків" = шаблон, який ніколи не збігається з назвою таблиці</span>
+  <span class="k">DECLARE</span> v_except <span class="k">VARCHAR</span>(128) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4 <span class="k">DEFAULT</span> <span class="s">'^#never#$'</span>;
+  <span class="k">DECLARE</span> cur <span class="k">CURSOR</span> <span class="k">FOR</span>
+    <span class="k">SELECT</span> c.TABLE_NAME
+    <span class="k">FROM</span> information_schema.COLUMNS c
+    <span class="k">JOIN</span> information_schema.TABLES t
+      <span class="k">ON</span> t.TABLE_SCHEMA = c.TABLE_SCHEMA <span class="k">AND</span> t.TABLE_NAME = c.TABLE_NAME <span class="k">AND</span> t.TABLE_TYPE = <span class="s">'BASE TABLE'</span>
+    <span class="k">WHERE</span> c.TABLE_SCHEMA = <span class="k">DATABASE</span>()
+      <span class="k">AND</span> c.COLUMN_NAME = p_col
+      <span class="k">AND</span> c.TABLE_NAME <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), p_like)
+      <span class="k">AND</span> c.TABLE_NAME &lt;&gt; <span class="k">CONCAT</span>(@p, p_entity)
+      <span class="k">AND</span> c.TABLE_NAME <span class="k">NOT</span> <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), <span class="s">'order%'</span>)
+      <span class="k">AND</span> c.TABLE_NAME <span class="k">NOT</span> <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), <span class="s">'return%'</span>)
+      <span class="c">-- CONVERT: у MySQL 8 information_schema в utf8mb3, а REGEXP вимагає однакове кодування (#3995)</span>
+      <span class="k">AND</span> <span class="k">CONVERT</span>(<span class="k">SUBSTRING</span>(c.TABLE_NAME, <span class="k">CHAR_LENGTH</span>(@p) + 1) <span class="k">USING</span> utf8mb4)
+          <span class="k">NOT</span> <span class="k">REGEXP</span> <span class="k">CONVERT</span>(v_except <span class="k">USING</span> utf8mb4);
+  <span class="k">DECLARE</span> <span class="k">CONTINUE</span> <span class="k">HANDLER</span> <span class="k">FOR</span> <span class="k">NOT</span> <span class="k">FOUND</span> <span class="k">SET</span> v_done = 1;
+
+  <span class="k">IF</span> p_except &lt;&gt; <span class="s">''</span> <span class="k">THEN</span>
+    <span class="k">SET</span> v_except = p_except;
+  <span class="k">END</span> <span class="k">IF</span>;
+
+  <span class="k">IF</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+             <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, p_entity)) <span class="k">THEN</span>
+    <span class="k">OPEN</span> cur;
+    read_loop: <span class="k">LOOP</span>
+      <span class="k">FETCH</span> cur <span class="k">INTO</span> v_table;
+      <span class="k">IF</span> v_done <span class="k">THEN</span>
+        <span class="k">LEAVE</span> read_loop;
+      <span class="k">END</span> <span class="k">IF</span>;
+      <span class="k">SET</span> @lp_sql = <span class="k">CONCAT</span>(
+        <span class="s">'DELETE x FROM `'</span>, v_table, <span class="s">'` x LEFT JOIN `'</span>, @p, p_entity, <span class="s">'` e ON e.`'</span>, p_entity_col, <span class="s">'` = x.`'</span>, p_col, <span class="s">'` '</span>,
+        <span class="s">'WHERE x.`'</span>, p_col, <span class="s">'` &lt;&gt; 0 AND e.`'</span>, p_entity_col, <span class="s">'` IS NULL'</span>);
+      <span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+      <span class="k">EXECUTE</span> lp_stmt;
+      <span class="k">SET</span> v_rows = ROW_COUNT();
+      <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+      <span class="k">INSERT</span> <span class="k">INTO</span> lp_report <span class="k">VALUES</span> (v_table, <span class="k">CONCAT</span>(p_col, <span class="s">' → неіснуючий '</span>, p_entity), v_rows);
+    <span class="k">END</span> <span class="k">LOOP</span>;
+    <span class="k">CLOSE</span> cur;
+  <span class="k">END</span> <span class="k">IF</span>;
+<span class="k">END</span>$$
+
+<span class="k">DELIMITER</span> ;
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 1. ТОВАРИ: усі таблиці з "product" у назві + відомі таблиці модулів</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'%product%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'review'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'cart'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'simple\\_cart'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'customer\\_wishlist'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'ebay\\_listing%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'etsy\\_listing'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'hpmodel%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'kjseries%'</span>, <span class="s">''</span>);
+<span class="c">-- Схожі товари: друга сторона зв'язку</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'related_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'product\\_related'</span>, <span class="s">''</span>);
+<span class="c">-- Значення опцій без самої опції товару</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_option_id'</span>, <span class="s">'product_option'</span>, <span class="s">'product_option_id'</span>, <span class="s">'product\\_option\\_value'</span>, <span class="s">''</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 2. КАТЕГОРІЇ (таблиці блогу/статей/галереї мають свої категорії — пропускаємо)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'category_id'</span>, <span class="s">'category'</span>, <span class="s">'category_id'</span>, <span class="s">'%category%'</span>, <span class="s">'blog|article|gallery'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'category_id'</span>, <span class="s">'category'</span>, <span class="s">'category_id'</span>, <span class="s">'ocfilter%'</span>, <span class="s">''</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 3. ВИРОБНИКИ</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'manufacturer_id'</span>, <span class="s">'manufacturer'</span>, <span class="s">'manufacturer_id'</span>, <span class="s">'%manufacturer%'</span>, <span class="s">''</span>);
+<span class="c">-- Товари з неіснуючим виробником: не видаляємо, а скидаємо виробника</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'product'</span>, <span class="s">'manufacturer'</span>, <span class="s">'manufacturer_id → неіснуючий виробник (скинуто в 0)'</span>,
+  <span class="s">'UPDATE `{p}product` x LEFT JOIN `{p}manufacturer` e ON e.manufacturer_id = x.manufacturer_id SET x.manufacturer_id = 0 WHERE x.manufacturer_id &lt;&gt; 0 AND e.manufacturer_id IS NULL'</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 4. АТРИБУТИ, ФІЛЬТРИ, ОПЦІЇ, ЗАВАНТАЖЕННЯ</span>
+<span class="c">--    (у таблицях OCFilter свої filter_id/option_id — їх не чіпаємо)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'attribute_id'</span>, <span class="s">'attribute'</span>, <span class="s">'attribute_id'</span>, <span class="s">'%attribute%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'attribute_group_id'</span>, <span class="s">'attribute_group'</span>, <span class="s">'attribute_group_id'</span>, <span class="s">'%attribute\\_group%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'filter_id'</span>, <span class="s">'filter'</span>, <span class="s">'filter_id'</span>, <span class="s">'%filter%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'filter_group_id'</span>, <span class="s">'filter_group'</span>, <span class="s">'filter_group_id'</span>, <span class="s">'%filter%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'option_id'</span>, <span class="s">'option'</span>, <span class="s">'option_id'</span>, <span class="s">'%option%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'option_value_id'</span>, <span class="s">'option_value'</span>, <span class="s">'option_value_id'</span>, <span class="s">'%option%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'download_id'</span>, <span class="s">'download'</span>, <span class="s">'download_id'</span>, <span class="s">'%download%'</span>, <span class="s">''</span>);
+
+<span class="c">-- OCFilter: значення без фільтра (усередині самого модуля)</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'ocfilter_filter_value'</span>, <span class="s">'ocfilter_filter'</span>, <span class="s">'filter_id → неіснуючий фільтр OCFilter'</span>,
+  <span class="s">'DELETE x FROM `{p}ocfilter_filter_value` x LEFT JOIN `{p}ocfilter_filter` e ON e.filter_id = x.filter_id AND e.source = x.source WHERE e.filter_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'ocfilter_filter_value_to_product'</span>, <span class="s">'ocfilter_filter'</span>, <span class="s">'filter_id → неіснуючий фільтр OCFilter'</span>,
+  <span class="s">'DELETE x FROM `{p}ocfilter_filter_value_to_product` x LEFT JOIN `{p}ocfilter_filter` e ON e.filter_id = x.filter_id AND e.source = x.source WHERE e.filter_id IS NULL'</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 5. МОВИ І МАГАЗИНИ (описи видалених мов, прив'язки до видалених магазинів)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'language_id'</span>, <span class="s">'language'</span>, <span class="s">'language_id'</span>, <span class="s">'%description'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'language_id'</span>, <span class="s">'language'</span>, <span class="s">'language_id'</span>, <span class="s">'product\\_attribute'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'language_id'</span>, <span class="s">'language'</span>, <span class="s">'language_id'</span>, <span class="s">'seo\\_url'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'store_id'</span>, <span class="s">'store'</span>, <span class="s">'store_id'</span>, <span class="s">'%\\_to\\_store'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'store_id'</span>, <span class="s">'store'</span>, <span class="s">'store_id'</span>, <span class="s">'seo\\_url'</span>, <span class="s">''</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 6. ЧПУ (seo_url): записи без сторінки, порожні та дублікати</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'product'</span>, <span class="s">'ЧПУ товарів без товару'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}product` e ON e.product_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''product\\_id=%'' AND e.product_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'category'</span>, <span class="s">'ЧПУ категорій без категорії'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}category` e ON e.category_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''category\\_id=%'' AND e.category_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'manufacturer'</span>, <span class="s">'ЧПУ виробників без виробника'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}manufacturer` e ON e.manufacturer_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''manufacturer\\_id=%'' AND e.manufacturer_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'information'</span>, <span class="s">'ЧПУ статей-інформації без сторінки'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}information` e ON e.information_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''information\\_id=%'' AND e.information_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'article'</span>, <span class="s">'ЧПУ статей блогу без статті'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}article` e ON e.article_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''article\\_id=%'' AND e.article_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'blog_category'</span>, <span class="s">'ЧПУ категорій блогу без категорії'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}blog_category` e ON e.blog_category_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''blog\\_category\\_id=%'' AND e.blog_category_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'gallery'</span>, <span class="s">'ЧПУ галерей без галереї'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}gallery` e ON e.gallery_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''gallery\\_id=%'' AND e.gallery_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'ocfilter_page'</span>, <span class="s">'ЧПУ SEO-сторінок OCFilter без сторінки'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}ocfilter_page` e ON e.page_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''ocfilter\\_page\\_id=%'' AND e.page_id IS NULL'</span>);
+<span class="c">-- Якщо таблиці OCFilter-сторінок немає взагалі — її ЧПУ теж сміття</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">''</span>, <span class="s">'ЧПУ OCFilter, коли модуля немає'</span>,
+  <span class="s">'DELETE FROM `{p}seo_url` WHERE `query` LIKE ''ocfilter\\_page\\_id=%'' AND NOT EXISTS (SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ''{p}ocfilter_page'')'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">''</span>, <span class="s">'порожні ЧПУ'</span>,
+  <span class="s">'DELETE FROM `{p}seo_url` WHERE TRIM(`keyword`) = '''' OR TRIM(`query`) = '''''</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">''</span>, <span class="s">'дублікати (той самий магазин + мова + сторінка), лишаємо найстаріший'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s JOIN `{p}seo_url` d ON d.store_id = s.store_id AND d.language_id = s.language_id AND d.`query` = s.`query` AND d.seo_url_id &lt; s.seo_url_id'</span>);
+
+<span class="c">-- Старий формат ЧПУ (OpenCart 2 / ocStore 2), якщо таблиця лишилась після оновлення</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'url_alias'</span>, <span class="s">'product'</span>, <span class="s">'старі ЧПУ товарів без товару'</span>,
+  <span class="s">'DELETE s FROM `{p}url_alias` s LEFT JOIN `{p}product` e ON e.product_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''product\\_id=%'' AND e.product_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'url_alias'</span>, <span class="s">'category'</span>, <span class="s">'старі ЧПУ категорій без категорії'</span>,
+  <span class="s">'DELETE s FROM `{p}url_alias` s LEFT JOIN `{p}category` e ON e.category_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''category\\_id=%'' AND e.category_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'url_alias'</span>, <span class="s">'manufacturer'</span>, <span class="s">'старі ЧПУ виробників без виробника'</span>,
+  <span class="s">'DELETE s FROM `{p}url_alias` s LEFT JOIN `{p}manufacturer` e ON e.manufacturer_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''manufacturer\\_id=%'' AND e.manufacturer_id IS NULL'</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_exec;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_orphans;
+
+<span class="c">-- Звіт: що саме було видалено</span>
+<span class="k">SELECT</span> tbl <span class="k">AS</span> <span class="i">`таблиця`</span>, what <span class="k">AS</span> <span class="i">`що`</span>, removed <span class="k">AS</span> <span class="i">`видалено рядків`</span>
+<span class="k">FROM</span> lp_report
+<span class="k">WHERE</span> removed &gt; 0
+<span class="k">ORDER</span> <span class="k">BY</span> tbl, what;
+
+<span class="k">SELECT</span> <span class="k">COALESCE</span>(<span class="k">SUM</span>(removed), 0) <span class="k">AS</span> <span class="i">`усього видалено`</span> <span class="k">FROM</span> lp_report;
+
+<span class="c">-- Що лишилось у ЧПУ за типами сторінок (для контролю)</span>
+<span class="k">SET</span> @lp_sql = <span class="k">REPLACE</span>(<span class="s">'SELECT SUBSTRING_INDEX(`query`, ''='', 1) AS `тип ЧПУ`, COUNT(*) AS `кількість` FROM `{p}seo_url` GROUP BY 1 ORDER BY 2 DESC'</span>, <span class="s">'{p}'</span>, @p);
+<span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+<span class="k">EXECUTE</span> lp_stmt;
+<span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+
+<span class="k">DROP</span> <span class="k">TEMPORARY</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_report;
+</code></pre>
+    </div>
+  </section>
+
+  <section id="code-1">
+    <div class="sec-title">🧽 Тільки хвости — <code class="fname">00_cleanup_orphans.sql</code></div>
+    <p class="lead">Для сайту, де товари вже видалили через адмінку: прибирає лише осиротілі записи (описи, фото, ЧПУ, таблиці модулів). Живий каталог не чіпає.</p>
+    <div class="codebox">
+      <div class="codebar">
+        <span class="codename">📄 00_cleanup_orphans.sql <span class="dl-size">269 рядків · 17.8 КБ</span></span>
+        <span class="codeactions">
+          <button type="button" class="cbtn" data-toggle="code-1-pre">↕ Розгорнути</button>
+          <a class="cbtn" href="00_cleanup_orphans.sql" download>⬇ Завантажити</a>
+          <button type="button" class="cbtn cbtn-copy" data-copy="code-1-pre">📋 Скопіювати</button>
+        </span>
+      </div>
+      <pre id="code-1-pre" class="collapsed"><code><span class="c">-- =====================================================================</span>
+<span class="c">-- OpenCart 3.0.x / ocStore 3.x — ПРИБИРАННЯ ХВОСТІВ (осиротілих записів)</span>
+<span class="c">--</span>
+<span class="c">-- Для ситуації: товари/категорії видалили через адмінку, а в описах,</span>
+<span class="c">-- таблицях модулів, ЧПУ тощо лишилися рядки зі старими ID.</span>
+<span class="c">-- Живі товари, категорії, статті, замовлення НЕ видаляються.</span>
+<span class="c">-- В кінці — звіт: яка таблиця, що саме і скільки рядків видалено.</span>
+<span class="c">--</span>
+<span class="c">-- ⚠️ ПЕРЕД ІМПОРТОМ зробіть бекап: phpMyAdmin → Експорт → Швидкий → SQL.</span>
+<span class="c">--</span>
+<span class="c">-- Префікс таблиць визначається АВТОМАТИЧНО. Якщо в базі кілька магазинів</span>
+<span class="c">-- з різними префіксами — впишіть потрібний у @p_manual нижче.</span>
+<span class="c">-- Якщо префікс не визначено, імпорт зупиниться і НІЧОГО не буде видалено.</span>
+<span class="c">--</span>
+<span class="c">-- Імпорт: phpMyAdmin → Імпорт → цей файл → Вперед.</span>
+<span class="c">-- =====================================================================</span>
+
+<span class="k">SET</span> @p_manual = <span class="s">''</span>;   <span class="c">-- наприклад 'oc_'; порожньо = автовизначення</span>
+
+<span class="k">SET</span> <span class="k">NAMES</span> utf8mb4;
+
+<span class="c">-- Автовизначення: префікс, для якого існують і product_to_category, і setting, і product</span>
+<span class="k">SET</span> @p = <span class="k">NULL</span>;
+<span class="k">SELECT</span> <span class="k">IF</span>(<span class="k">COUNT</span>(*) = 1, <span class="k">MIN</span>(c.pfx), <span class="k">NULL</span>) <span class="k">INTO</span> @p
+<span class="k">FROM</span> (
+  <span class="k">SELECT</span> <span class="k">LEFT</span>(t.TABLE_NAME, <span class="k">CHAR_LENGTH</span>(t.TABLE_NAME) - <span class="k">CHAR_LENGTH</span>(<span class="s">'product_to_category'</span>)) <span class="k">AS</span> pfx
+  <span class="k">FROM</span> information_schema.TABLES t
+  <span class="k">WHERE</span> t.TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> t.TABLE_NAME <span class="k">LIKE</span> <span class="s">'%product\_to\_category'</span>
+) c
+<span class="k">WHERE</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES s
+              <span class="k">WHERE</span> s.TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> s.TABLE_NAME = <span class="k">CONCAT</span>(c.pfx, <span class="s">'setting'</span>))
+  <span class="k">AND</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES s
+              <span class="k">WHERE</span> s.TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> s.TABLE_NAME = <span class="k">CONCAT</span>(c.pfx, <span class="s">'product'</span>));
+<span class="k">SET</span> @p = <span class="k">IF</span>(@p_manual &lt;&gt; <span class="s">''</span>, @p_manual, @p);
+
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_check_prefix;
+<span class="k">DELIMITER</span> $$
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_check_prefix()
+<span class="k">BEGIN</span>
+  <span class="k">IF</span> @p <span class="k">IS</span> <span class="k">NULL</span> <span class="k">OR</span> <span class="k">NOT</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+                               <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, <span class="s">'product'</span>)) <span class="k">THEN</span>
+    <span class="k">SIGNAL</span> <span class="k">SQLSTATE</span> <span class="s">'45000'</span>
+      <span class="k">SET</span> <span class="k">MESSAGE_TEXT</span> = <span class="s">'Префікс таблиць не визначено: впишіть його в @p_manual (як DB_PREFIX). Нічого не видалено.'</span>;
+  <span class="k">END</span> <span class="k">IF</span>;
+<span class="k">END</span>$$
+<span class="k">DELIMITER</span> ;
+<span class="k">CALL</span> lp_check_prefix();
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_check_prefix;
+
+<span class="k">SELECT</span> @p <span class="k">AS</span> <span class="i">`префікс таблиць`</span>;
+
+<span class="c">-- =====================================================================</span>
+<span class="c">-- OpenCart 3.0.x / ocStore 3.x — очистка «хвостів» (осиротілих записів)</span>
+<span class="c">--</span>
+<span class="c">-- Для ситуації: товари/категорії видалили через адмінку, а в таблицях</span>
+<span class="c">-- модулів, описах, ЧПУ тощо лишилися рядки зі старими ID.</span>
+<span class="c">-- Живі товари, категорії, статті НЕ видаляються — лише записи, що</span>
+<span class="c">-- посилаються на те, чого вже не існує.</span>
+<span class="c">--</span>
+<span class="c">-- ⚠️ ПЕРЕД ЗАПУСКОМ зробіть бекап: phpMyAdmin → Експорт → Швидкий → SQL.</span>
+<span class="c">--</span>
+<span class="c">-- Префікс таблиць задається ОДИН раз нижче (@p) — як DB_PREFIX у config.php.</span>
+<span class="c">-- В кінці виводиться звіт: яка таблиця, що саме і скільки рядків видалено.</span>
+<span class="c">-- Історія замовлень і повернень (order*, return*) не чіпається ніколи.</span>
+<span class="c">-- =====================================================================</span>
+
+<span class="c">-- @p визначено на початку файлу</span>
+
+<span class="k">SET</span> <span class="k">NAMES</span> utf8mb4;
+
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_exec;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_orphans;
+<span class="k">DROP</span> <span class="k">TEMPORARY</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_report;
+<span class="k">CREATE</span> <span class="k">TEMPORARY</span> <span class="k">TABLE</span> lp_report (
+  tbl <span class="k">VARCHAR</span>(64) <span class="k">NOT</span> <span class="k">NULL</span>,
+  what <span class="k">VARCHAR</span>(255) <span class="k">NOT</span> <span class="k">NULL</span>,
+  removed <span class="k">INT</span> <span class="k">NOT</span> <span class="k">NULL</span>
+) <span class="k">DEFAULT</span> CHARSET=utf8mb4;
+
+<span class="k">DELIMITER</span> $$
+
+<span class="c">-- Виконує запит, якщо існують обидві таблиці (назви БЕЗ префікса; p_need може бути '').</span>
+<span class="c">-- У запиті {p} замінюється на префікс. Кількість змінених рядків пишеться у звіт.</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_exec(<span class="k">IN</span> p_table <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_need <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_what <span class="k">VARCHAR</span>(255) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_sql <span class="k">TEXT</span> <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4)
+<span class="k">BEGIN</span>
+  <span class="k">DECLARE</span> v_rows <span class="k">INT</span> <span class="k">DEFAULT</span> 0;
+  <span class="k">IF</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+             <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, p_table))
+     <span class="k">AND</span> (p_need = <span class="s">''</span> <span class="k">OR</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+             <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, p_need))) <span class="k">THEN</span>
+    <span class="k">SET</span> @lp_sql = <span class="k">REPLACE</span>(p_sql, <span class="s">'{p}'</span>, @p);
+    <span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+    <span class="k">EXECUTE</span> lp_stmt;
+    <span class="k">SET</span> v_rows = ROW_COUNT();
+    <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+    <span class="k">INSERT</span> <span class="k">INTO</span> lp_report <span class="k">VALUES</span> (<span class="k">CONCAT</span>(@p, p_table), p_what, v_rows);
+  <span class="k">END</span> <span class="k">IF</span>;
+<span class="k">END</span>$$
+
+<span class="c">-- Для КОЖНОЇ таблиці, що має колонку p_col і чия назва (без префікса) підходить</span>
+<span class="c">-- під LIKE p_like, але НЕ під REGEXP p_except, видаляє рядки, де p_col &lt;&gt; 0</span>
+<span class="c">-- і такого значення немає в p_entity.p_entity_col.</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> lp_orphans(
+  <span class="k">IN</span> p_col <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_entity <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_entity_col <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4,
+  <span class="k">IN</span> p_like <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4, <span class="k">IN</span> p_except <span class="k">VARCHAR</span>(128) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4
+)
+<span class="k">BEGIN</span>
+  <span class="k">DECLARE</span> v_done <span class="k">INT</span> <span class="k">DEFAULT</span> 0;
+  <span class="k">DECLARE</span> v_table <span class="k">VARCHAR</span>(64) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4;
+  <span class="k">DECLARE</span> v_rows <span class="k">INT</span>;
+  <span class="c">-- Порожній REGEXP падає на MySQL 5.7 / старих MariaDB (#1139), тому</span>
+  <span class="c">-- "без винятків" = шаблон, який ніколи не збігається з назвою таблиці</span>
+  <span class="k">DECLARE</span> v_except <span class="k">VARCHAR</span>(128) <span class="k">CHARACTER</span> <span class="k">SET</span> utf8mb4 <span class="k">DEFAULT</span> <span class="s">'^#never#$'</span>;
+  <span class="k">DECLARE</span> cur <span class="k">CURSOR</span> <span class="k">FOR</span>
+    <span class="k">SELECT</span> c.TABLE_NAME
+    <span class="k">FROM</span> information_schema.COLUMNS c
+    <span class="k">JOIN</span> information_schema.TABLES t
+      <span class="k">ON</span> t.TABLE_SCHEMA = c.TABLE_SCHEMA <span class="k">AND</span> t.TABLE_NAME = c.TABLE_NAME <span class="k">AND</span> t.TABLE_TYPE = <span class="s">'BASE TABLE'</span>
+    <span class="k">WHERE</span> c.TABLE_SCHEMA = <span class="k">DATABASE</span>()
+      <span class="k">AND</span> c.COLUMN_NAME = p_col
+      <span class="k">AND</span> c.TABLE_NAME <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), p_like)
+      <span class="k">AND</span> c.TABLE_NAME &lt;&gt; <span class="k">CONCAT</span>(@p, p_entity)
+      <span class="k">AND</span> c.TABLE_NAME <span class="k">NOT</span> <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), <span class="s">'order%'</span>)
+      <span class="k">AND</span> c.TABLE_NAME <span class="k">NOT</span> <span class="k">LIKE</span> <span class="k">CONCAT</span>(<span class="k">REPLACE</span>(@p, <span class="s">'_'</span>, <span class="s">'\\_'</span>), <span class="s">'return%'</span>)
+      <span class="c">-- CONVERT: у MySQL 8 information_schema в utf8mb3, а REGEXP вимагає однакове кодування (#3995)</span>
+      <span class="k">AND</span> <span class="k">CONVERT</span>(<span class="k">SUBSTRING</span>(c.TABLE_NAME, <span class="k">CHAR_LENGTH</span>(@p) + 1) <span class="k">USING</span> utf8mb4)
+          <span class="k">NOT</span> <span class="k">REGEXP</span> <span class="k">CONVERT</span>(v_except <span class="k">USING</span> utf8mb4);
+  <span class="k">DECLARE</span> <span class="k">CONTINUE</span> <span class="k">HANDLER</span> <span class="k">FOR</span> <span class="k">NOT</span> <span class="k">FOUND</span> <span class="k">SET</span> v_done = 1;
+
+  <span class="k">IF</span> p_except &lt;&gt; <span class="s">''</span> <span class="k">THEN</span>
+    <span class="k">SET</span> v_except = p_except;
+  <span class="k">END</span> <span class="k">IF</span>;
+
+  <span class="k">IF</span> <span class="k">EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> information_schema.TABLES
+             <span class="k">WHERE</span> TABLE_SCHEMA = <span class="k">DATABASE</span>() <span class="k">AND</span> TABLE_NAME = <span class="k">CONCAT</span>(@p, p_entity)) <span class="k">THEN</span>
+    <span class="k">OPEN</span> cur;
+    read_loop: <span class="k">LOOP</span>
+      <span class="k">FETCH</span> cur <span class="k">INTO</span> v_table;
+      <span class="k">IF</span> v_done <span class="k">THEN</span>
+        <span class="k">LEAVE</span> read_loop;
+      <span class="k">END</span> <span class="k">IF</span>;
+      <span class="k">SET</span> @lp_sql = <span class="k">CONCAT</span>(
+        <span class="s">'DELETE x FROM `'</span>, v_table, <span class="s">'` x LEFT JOIN `'</span>, @p, p_entity, <span class="s">'` e ON e.`'</span>, p_entity_col, <span class="s">'` = x.`'</span>, p_col, <span class="s">'` '</span>,
+        <span class="s">'WHERE x.`'</span>, p_col, <span class="s">'` &lt;&gt; 0 AND e.`'</span>, p_entity_col, <span class="s">'` IS NULL'</span>);
+      <span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+      <span class="k">EXECUTE</span> lp_stmt;
+      <span class="k">SET</span> v_rows = ROW_COUNT();
+      <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+      <span class="k">INSERT</span> <span class="k">INTO</span> lp_report <span class="k">VALUES</span> (v_table, <span class="k">CONCAT</span>(p_col, <span class="s">' → неіснуючий '</span>, p_entity), v_rows);
+    <span class="k">END</span> <span class="k">LOOP</span>;
+    <span class="k">CLOSE</span> cur;
+  <span class="k">END</span> <span class="k">IF</span>;
+<span class="k">END</span>$$
+
+<span class="k">DELIMITER</span> ;
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 1. ТОВАРИ: усі таблиці з "product" у назві + відомі таблиці модулів</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'%product%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'review'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'cart'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'simple\\_cart'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'customer\\_wishlist'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'ebay\\_listing%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'etsy\\_listing'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'hpmodel%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'kjseries%'</span>, <span class="s">''</span>);
+<span class="c">-- Схожі товари: друга сторона зв'язку</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'related_id'</span>, <span class="s">'product'</span>, <span class="s">'product_id'</span>, <span class="s">'product\\_related'</span>, <span class="s">''</span>);
+<span class="c">-- Значення опцій без самої опції товару</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'product_option_id'</span>, <span class="s">'product_option'</span>, <span class="s">'product_option_id'</span>, <span class="s">'product\\_option\\_value'</span>, <span class="s">''</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 2. КАТЕГОРІЇ (таблиці блогу/статей/галереї мають свої категорії — пропускаємо)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'category_id'</span>, <span class="s">'category'</span>, <span class="s">'category_id'</span>, <span class="s">'%category%'</span>, <span class="s">'blog|article|gallery'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'category_id'</span>, <span class="s">'category'</span>, <span class="s">'category_id'</span>, <span class="s">'ocfilter%'</span>, <span class="s">''</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 3. ВИРОБНИКИ</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'manufacturer_id'</span>, <span class="s">'manufacturer'</span>, <span class="s">'manufacturer_id'</span>, <span class="s">'%manufacturer%'</span>, <span class="s">''</span>);
+<span class="c">-- Товари з неіснуючим виробником: не видаляємо, а скидаємо виробника</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'product'</span>, <span class="s">'manufacturer'</span>, <span class="s">'manufacturer_id → неіснуючий виробник (скинуто в 0)'</span>,
+  <span class="s">'UPDATE `{p}product` x LEFT JOIN `{p}manufacturer` e ON e.manufacturer_id = x.manufacturer_id SET x.manufacturer_id = 0 WHERE x.manufacturer_id &lt;&gt; 0 AND e.manufacturer_id IS NULL'</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 4. АТРИБУТИ, ФІЛЬТРИ, ОПЦІЇ, ЗАВАНТАЖЕННЯ</span>
+<span class="c">--    (у таблицях OCFilter свої filter_id/option_id — їх не чіпаємо)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'attribute_id'</span>, <span class="s">'attribute'</span>, <span class="s">'attribute_id'</span>, <span class="s">'%attribute%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'attribute_group_id'</span>, <span class="s">'attribute_group'</span>, <span class="s">'attribute_group_id'</span>, <span class="s">'%attribute\\_group%'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'filter_id'</span>, <span class="s">'filter'</span>, <span class="s">'filter_id'</span>, <span class="s">'%filter%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'filter_group_id'</span>, <span class="s">'filter_group'</span>, <span class="s">'filter_group_id'</span>, <span class="s">'%filter%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'option_id'</span>, <span class="s">'option'</span>, <span class="s">'option_id'</span>, <span class="s">'%option%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'option_value_id'</span>, <span class="s">'option_value'</span>, <span class="s">'option_value_id'</span>, <span class="s">'%option%'</span>, <span class="s">'ocfilter'</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'download_id'</span>, <span class="s">'download'</span>, <span class="s">'download_id'</span>, <span class="s">'%download%'</span>, <span class="s">''</span>);
+
+<span class="c">-- OCFilter: значення без фільтра (усередині самого модуля)</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'ocfilter_filter_value'</span>, <span class="s">'ocfilter_filter'</span>, <span class="s">'filter_id → неіснуючий фільтр OCFilter'</span>,
+  <span class="s">'DELETE x FROM `{p}ocfilter_filter_value` x LEFT JOIN `{p}ocfilter_filter` e ON e.filter_id = x.filter_id AND e.source = x.source WHERE e.filter_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'ocfilter_filter_value_to_product'</span>, <span class="s">'ocfilter_filter'</span>, <span class="s">'filter_id → неіснуючий фільтр OCFilter'</span>,
+  <span class="s">'DELETE x FROM `{p}ocfilter_filter_value_to_product` x LEFT JOIN `{p}ocfilter_filter` e ON e.filter_id = x.filter_id AND e.source = x.source WHERE e.filter_id IS NULL'</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 5. МОВИ І МАГАЗИНИ (описи видалених мов, прив'язки до видалених магазинів)</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_orphans(<span class="s">'language_id'</span>, <span class="s">'language'</span>, <span class="s">'language_id'</span>, <span class="s">'%description'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'language_id'</span>, <span class="s">'language'</span>, <span class="s">'language_id'</span>, <span class="s">'product\\_attribute'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'language_id'</span>, <span class="s">'language'</span>, <span class="s">'language_id'</span>, <span class="s">'seo\\_url'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'store_id'</span>, <span class="s">'store'</span>, <span class="s">'store_id'</span>, <span class="s">'%\\_to\\_store'</span>, <span class="s">''</span>);
+<span class="k">CALL</span> lp_orphans(<span class="s">'store_id'</span>, <span class="s">'store'</span>, <span class="s">'store_id'</span>, <span class="s">'seo\\_url'</span>, <span class="s">''</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="c">-- 6. ЧПУ (seo_url): записи без сторінки, порожні та дублікати</span>
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'product'</span>, <span class="s">'ЧПУ товарів без товару'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}product` e ON e.product_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''product\\_id=%'' AND e.product_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'category'</span>, <span class="s">'ЧПУ категорій без категорії'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}category` e ON e.category_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''category\\_id=%'' AND e.category_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'manufacturer'</span>, <span class="s">'ЧПУ виробників без виробника'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}manufacturer` e ON e.manufacturer_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''manufacturer\\_id=%'' AND e.manufacturer_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'information'</span>, <span class="s">'ЧПУ статей-інформації без сторінки'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}information` e ON e.information_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''information\\_id=%'' AND e.information_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'article'</span>, <span class="s">'ЧПУ статей блогу без статті'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}article` e ON e.article_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''article\\_id=%'' AND e.article_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'blog_category'</span>, <span class="s">'ЧПУ категорій блогу без категорії'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}blog_category` e ON e.blog_category_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''blog\\_category\\_id=%'' AND e.blog_category_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'gallery'</span>, <span class="s">'ЧПУ галерей без галереї'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}gallery` e ON e.gallery_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''gallery\\_id=%'' AND e.gallery_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">'ocfilter_page'</span>, <span class="s">'ЧПУ SEO-сторінок OCFilter без сторінки'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}ocfilter_page` e ON e.page_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''ocfilter\\_page\\_id=%'' AND e.page_id IS NULL'</span>);
+<span class="c">-- Якщо таблиці OCFilter-сторінок немає взагалі — її ЧПУ теж сміття</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">''</span>, <span class="s">'ЧПУ OCFilter, коли модуля немає'</span>,
+  <span class="s">'DELETE FROM `{p}seo_url` WHERE `query` LIKE ''ocfilter\\_page\\_id=%'' AND NOT EXISTS (SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ''{p}ocfilter_page'')'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">''</span>, <span class="s">'порожні ЧПУ'</span>,
+  <span class="s">'DELETE FROM `{p}seo_url` WHERE TRIM(`keyword`) = '''' OR TRIM(`query`) = '''''</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'seo_url'</span>, <span class="s">''</span>, <span class="s">'дублікати (той самий магазин + мова + сторінка), лишаємо найстаріший'</span>,
+  <span class="s">'DELETE s FROM `{p}seo_url` s JOIN `{p}seo_url` d ON d.store_id = s.store_id AND d.language_id = s.language_id AND d.`query` = s.`query` AND d.seo_url_id &lt; s.seo_url_id'</span>);
+
+<span class="c">-- Старий формат ЧПУ (OpenCart 2 / ocStore 2), якщо таблиця лишилась після оновлення</span>
+<span class="k">CALL</span> lp_exec(<span class="s">'url_alias'</span>, <span class="s">'product'</span>, <span class="s">'старі ЧПУ товарів без товару'</span>,
+  <span class="s">'DELETE s FROM `{p}url_alias` s LEFT JOIN `{p}product` e ON e.product_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''product\\_id=%'' AND e.product_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'url_alias'</span>, <span class="s">'category'</span>, <span class="s">'старі ЧПУ категорій без категорії'</span>,
+  <span class="s">'DELETE s FROM `{p}url_alias` s LEFT JOIN `{p}category` e ON e.category_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''category\\_id=%'' AND e.category_id IS NULL'</span>);
+<span class="k">CALL</span> lp_exec(<span class="s">'url_alias'</span>, <span class="s">'manufacturer'</span>, <span class="s">'старі ЧПУ виробників без виробника'</span>,
+  <span class="s">'DELETE s FROM `{p}url_alias` s LEFT JOIN `{p}manufacturer` e ON e.manufacturer_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''manufacturer\\_id=%'' AND e.manufacturer_id IS NULL'</span>);
+
+<span class="c">-- ---------------------------------------------------------------------</span>
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_exec;
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_orphans;
+
+<span class="c">-- Звіт: що саме було видалено</span>
+<span class="k">SELECT</span> tbl <span class="k">AS</span> <span class="i">`таблиця`</span>, what <span class="k">AS</span> <span class="i">`що`</span>, removed <span class="k">AS</span> <span class="i">`видалено рядків`</span>
+<span class="k">FROM</span> lp_report
+<span class="k">WHERE</span> removed &gt; 0
+<span class="k">ORDER</span> <span class="k">BY</span> tbl, what;
+
+<span class="k">SELECT</span> <span class="k">COALESCE</span>(<span class="k">SUM</span>(removed), 0) <span class="k">AS</span> <span class="i">`усього видалено`</span> <span class="k">FROM</span> lp_report;
+
+<span class="c">-- Що лишилось у ЧПУ за типами сторінок (для контролю)</span>
+<span class="k">SET</span> @lp_sql = <span class="k">REPLACE</span>(<span class="s">'SELECT SUBSTRING_INDEX(`query`, ''='', 1) AS `тип ЧПУ`, COUNT(*) AS `кількість` FROM `{p}seo_url` GROUP BY 1 ORDER BY 2 DESC'</span>, <span class="s">'{p}'</span>, @p);
+<span class="k">PREPARE</span> lp_stmt <span class="k">FROM</span> @lp_sql;
+<span class="k">EXECUTE</span> lp_stmt;
+<span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> lp_stmt;
+
+<span class="k">DROP</span> <span class="k">TEMPORARY</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> lp_report;
+</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">🛠 Помилки та що робити</div>
+    <div class="readme">
+      <table>
+        <tr><th>Помилка</th><th>Що робити</th></tr>
+        <tr><td><code>#1644 Префікс таблиць не визначено…</code></td><td>У базі кілька магазинів або нестандартна схема. Впишіть префікс у <code>SET @p_manual = '…';</code>. Нічого не видалено.</td></tr>
+        <tr><td><code>#1044</code> / <code>#1227</code> Access denied … CREATE ROUTINE</td><td>Користувачу БД бракує права на процедури. Імпортуйте від користувача з повними правами або попросіть хостинг дати <code>CREATE ROUTINE</code>.</td></tr>
+        <tr><td>Порожня відповідь / тайм-аут</td><td>Використайте «Імпорт» замість вкладки SQL. Повторний запуск безпечний.</td></tr>
+        <tr><td><code>PROCEDURE … already exists</code></td><td>Залишок обірваного запуску — просто імпортуйте файл ще раз.</td></tr>
+        <tr><td>Категорії без батька в адмінці</td><td>Каталог → Категорії → кнопка 🔄 «Перебудувати».</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">✅ Сумісність</div>
+    <div class="readme">
+      <p>Перевірено в строгому SQL-режимі на <strong>MySQL 8.0</strong> і <strong>MariaDB 10.6</strong>, бази в кодуваннях <code>latin1</code> і <code>utf8mb4</code>: чистий OpenCart 3.0.3.3, ocStore з таблицями модулів (hpmodel, OCFilter, блог), різні префікси, дві установки в одній базі. Повторний запуск — без помилок. MySQL 5.7 окремо не перевірявся. OpenCart 2.x не підтримується (інша схема ЧПУ).</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>OpenCart Modules · Очистка каталогу (SQL)</footer>
+
+<script>
+  // Копіювання коду: Clipboard API, а якщо він недоступний або відмовив — через тимчасовий textarea
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(function () { return copyFallback(text); });
+    }
+    return copyFallback(text);
+  }
+
+  function copyFallback(text) {
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy') ? resolve() : reject(new Error('copy failed')); }
+      catch (e) { reject(e); }
+      finally { document.body.removeChild(ta); }
+    });
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    var label = btn.textContent;
+    btn.addEventListener('click', function () {
+      var pre = document.getElementById(btn.getAttribute('data-copy'));
+      copyText(pre.textContent).then(function () {
+        btn.textContent = '✓ Скопійовано';
+        btn.classList.add('done');
+      }, function () {
+        btn.textContent = '✗ Не вдалося — виділіть вручну';
+      }).finally(function () {
+        setTimeout(function () { btn.textContent = label; btn.classList.remove('done'); }, 2000);
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = document.getElementById(btn.getAttribute('data-toggle'));
+      var collapsed = pre.classList.toggle('collapsed');
+      btn.textContent = collapsed ? '↕ Розгорнути' : '↕ Згорнути';
+    });
+  });
+</script>
+
+</body>
+</html>

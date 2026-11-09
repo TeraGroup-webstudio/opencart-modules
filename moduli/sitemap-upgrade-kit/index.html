@@ -31,7 +31,7 @@
     .readme{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;white-space:pre-wrap;font-size:.875rem;line-height:1.7;color:var(--text)}
     footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
     @media(max-width:640px){.hero-text h1{font-size:1.25rem}.content{padding:1.5rem 1rem}}
-  .summary,.note,.steps{line-height:1.8}.note{color:#94a3b8;font-size:.875rem;margin-top:1rem}.steps{padding:1.25rem 1.5rem 1.25rem 2.75rem;background:var(--card);border:1px solid var(--border);border-radius:12px}.steps li+li{margin-top:.65rem}code{color:#c4b5fd;overflow-wrap:anywhere}.dl-grid{flex-direction:column;align-items:flex-start}.dl-btn{max-width:100%;overflow-wrap:anywhere}.readme{margin:0;font-family:inherit;overflow-wrap:anywhere}a:focus-visible{outline:2px solid #a5b4fc;outline-offset:4px}@media(prefers-reduced-motion:reduce){.dl-btn{transition:none}.dl-btn:hover{transform:none}}</style>
+  .summary,.note,.steps{line-height:1.8}.note{color:#94a3b8;font-size:.875rem;margin-top:1rem}.steps{padding:1.25rem 1.5rem 1.25rem 2.75rem;background:var(--card);border:1px solid var(--border);border-radius:12px}.steps li+li{margin-top:.65rem}code{color:#c4b5fd;overflow-wrap:anywhere}.dl-grid{flex-direction:column;align-items:flex-start}.dl-btn{max-width:100%;overflow-wrap:anywhere}.readme{margin:0;font-family:inherit;overflow-wrap:anywhere}a:focus-visible{outline:2px solid #a5b4fc;outline-offset:4px}@media(prefers-reduced-motion:reduce){.dl-btn{transition:none}.dl-btn:hover{transform:none}}.readme{white-space:normal}.readme h3,.readme h4,.readme h5{margin:1.6rem 0 .75rem;line-height:1.4;color:#c4b5fd}.readme h3:first-child{margin-top:0}.readme p{margin:.8rem 0}.readme ul,.readme ol{padding-left:1.5rem;margin:.8rem 0}.readme li+li{margin-top:.45rem}.readme pre{padding:1rem;margin:1rem 0;background:#080c18;border:1px solid var(--border);border-radius:8px;overflow-x:auto;white-space:pre}.readme code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.85em}.readme pre code{font-size:.8rem;overflow-wrap:normal}.readme a{color:#a5b4fc}</style>
 </head>
 <body>
 
@@ -51,112 +51,62 @@
 <section><h2 class="sec-title">Про комплект</h2><p class="summary">Готова папка <code>upload</code> для оновлення сумісного модуля <code>sitemap_multi</code>: клікабельний HTML-перегляд, фільтри мов, лічильники та XML-індекс із частинами товарів.</p><p class="note">Це оновлення наявного модуля, а не інсталятор OCMOD. Збережіть резервні копії та звірте власні доробки перед заміною.</p></section>
 <section><h2 class="sec-title">Встановлення</h2><ol class="steps"><li>Завантажте <strong>upload.zip</strong> і розпакуйте архів.</li><li>Скопіюйте <strong>вміст розпакованої папки upload у корінь сайту</strong>, де лежить index.php. Папка catalog має об’єднатися з наявною. Саму папку upload завантажувати не потрібно.</li><li>Внесіть точкові правки в <code>robots.txt</code> та <code>.htaccess</code> за інструкцією нижче. Підставте свій домен.</li><li>Перевірте HTML, XML і <code>/sitemap.xml</code>; подайте XML-індекс у Search Console.</li></ol></section>
 <section><h2 class="sec-title">⬇ Завантажити</h2><div class="dl-grid"><a href="upload.zip" download class="dl-btn dl-ocmod">📦 Завантажити upload.zip — усі файли модуля</a><a href="MANUAL-CHANGES.md" download class="dl-btn dl-ocmod">📖 MANUAL-CHANGES.md — точкові правки</a></div><p class="note">Розпакуйте upload.zip та скопіюйте вміст папки upload у корінь сайту зі збереженням структури. Архів не потрібно встановлювати через інсталятор OCMOD.</p></section>
-<section><h2 class="sec-title">📖 Інструкція для Ukraine.com.ua</h2><pre class="readme"># Встановлення sitemap у старий проєкт
-
-## 1. Завантажити upload
-
-Зберегти резервні копії двох PHP-файлів, `robots.txt` і `.htaccess`.
-
-Завантажити й розпакувати архів **upload.zip**. Вміст розпакованої папки **upload** скопіювати в корінь сайту, де лежить `index.php`. Папка `catalog` має об'єднатися з наявною. Саму папку `upload` не завантажувати.
-
-Готові файли:
-
-```text
-catalog/controller/extension/feed/sitemap_multi.php
+<section><h2 class="sec-title">📖 Інструкція для Ukraine.com.ua</h2><div class="readme"><h3>Встановлення sitemap у старий проєкт</h3>
+<h4>1. Завантажити upload</h4>
+<p>Зберегти резервні копії двох PHP-файлів, <code>robots.txt</code> і <code>.htaccess</code>.</p>
+<p>Завантажити та розпакувати архів <strong>upload.zip</strong>. Вміст папки <strong>upload</strong> скопіювати в корінь сайту, де лежить <code>index.php</code>. Папка <code>catalog</code> має об'єднатися з наявною. Саму папку <code>upload</code> не завантажувати.</p>
+<p>Готові файли:</p>
+<pre><code>catalog/controller/extension/feed/sitemap_multi.php
 catalog/model/extension/feed/sitemap_multi.php
 catalog/view/theme/default/stylesheet/sitemap_multi_html.css
-catalog/view/theme/default/stylesheet/sitemap_multi_xml.css
-```
-
-Цей комплект призначений для старих проєктів із сумісною версією модуля `sitemap_multi`, як у tgcart. Якщо контролер або модель містять власні доробки, порівняти їх перед заміною. Інші PHP-файли для такого встановлення правити не потрібно. Модуль має бути ввімкнений; PHP — мати DOM/libxml.
-
-## 2. Правка robots.txt
-
-Додати в кінець файлу, **замінивши `YOUR-DOMAIN` своїм доменом**:
-
-```text
-Sitemap: https://YOUR-DOMAIN/index.php?route=extension/feed/sitemap_multi&amp;view=xml
-```
-
-Якщо рядок для цього sitemap уже є, замінити його, не дублювати. Інші Sitemap та чинні Allow/Disallow залишити. У robots.txt використовувати звичайний `&amp;`, а не `&amp;amp;`.
-
-## 3. Правки .htaccess — Apache
-
-### 3.1. Адреса /sitemap.xml
-
-Знайти старе правило:
-
-```apache
-RewriteRule ^sitemap.xml$ index.php?route=extension/feed/sitemap_multi [L]
-```
-
-Замінити на:
-
-```apache
-RewriteRule ^sitemap\.xml$ index.php?route=extension/feed/sitemap_multi&amp;view=xml [L]
-```
-
-Якщо старого правила немає, вставити нове після `RewriteEngine On` / `RewriteBase`, **перед загальним SEO-правилом** із `RewriteCond %{REQUEST_FILENAME} !-f`.
-
-### 3.2. Виключення з редиректу page=1
-
-Лише якщо у файлі є такий блок:
-
-```apache
+catalog/view/theme/default/stylesheet/sitemap_multi_xml.css</code></pre>
+<p>Цей комплект призначений для старих проєктів із сумісною версією модуля <code>sitemap_multi</code>, як у tgcart. Якщо контролер або модель містять власні доробки, порівняти їх перед заміною. Інші PHP-файли для такого встановлення правити не потрібно. Модуль має бути ввімкнений; PHP — мати DOM/libxml.</p>
+<h4>2. Правка robots.txt</h4>
+<p>Додати в кінець файлу, <strong>замінивши <code>YOUR-DOMAIN</code> своїм доменом</strong>:</p>
+<pre><code>Sitemap: https://YOUR-DOMAIN/index.php?route=extension/feed/sitemap_multi&amp;view=xml</code></pre>
+<p>Якщо рядок для цього sitemap уже є, замінити його, не дублювати. Інші Sitemap та чинні Allow/Disallow залишити. У robots.txt використовувати звичайний <code>&amp;</code>, а не <code>&amp;amp;</code>.</p>
+<h4>3. Правки .htaccess — Apache</h4>
+<h5>3.1. Адреса /sitemap.xml</h5>
+<p>Знайти старе правило:</p>
+<pre><code>RewriteRule ^sitemap.xml$ index.php?route=extension/feed/sitemap_multi [L]</code></pre>
+<p>Замінити на:</p>
+<pre><code>RewriteRule ^sitemap\.xml$ index.php?route=extension/feed/sitemap_multi&amp;view=xml [L]</code></pre>
+<p>Якщо старого правила немає, вставити нове після <code>RewriteEngine On</code> / <code>RewriteBase</code>, <strong>перед загальним SEO-правилом</strong> із <code>RewriteCond %{REQUEST_FILENAME} !-f</code>.</p>
+<h5>3.2. Виключення з редиректу page=1</h5>
+<p>Лише якщо у файлі є такий блок:</p>
+<pre><code>RewriteCond %{QUERY_STRING} ^(.*)&amp;?page=1$
+RewriteRule ^(.*)/?$ /$1?%1%2 [R=301,L]</code></pre>
+<p>Додати один RewriteCond <strong>безпосередньо перед його першою умовою</strong>. Результат:</p>
+<pre><code>RewriteCond %{QUERY_STRING} !(^|&amp;)route=extension(/|%2f)feed(/|%2f)sitemap_multi(&amp;|$) [NC]
 RewriteCond %{QUERY_STRING} ^(.*)&amp;?page=1$
-RewriteRule ^(.*)/?$ /$1?%1%2 [R=301,L]
-```
-
-Додати один RewriteCond **безпосередньо перед його першою умовою**. Результат:
-
-```apache
-RewriteCond %{QUERY_STRING} !(^|&amp;)route=extension(/|%2f)feed(/|%2f)sitemap_multi(&amp;|$) [NC]
-RewriteCond %{QUERY_STRING} ^(.*)&amp;?page=1$
-RewriteRule ^(.*)/?$ /$1?%1%2 [R=301,L]
-```
-
-Власне правило редиректу залишити таким, як воно було в проєкті. Якщо блоку немає, не додавати його: виключення не потрібне. Не вставляти окремий RewriteCond перед правилом sitemap.xml.
-
-### Особливість Ukraine.com.ua
-
-Для звичайного хостингу Ukraine.com.ua використовувати наведені правила .htaccess. Nginx може віддавати статичні файли, оминаючи Apache. Писати власну конфігурацію Nginx для цього пакета не потрібно.
-
-Якщо /sitemap.xml показує старий XML або правило не спрацьовує:
-
-1. У панелі adm.tools відкрити налаштування потрібного сайту → «Статичні файли».
-2. Якщо у списку є розширення xml, прибрати лише його та зберегти. CSS, JS і зображення залишити статичними.
-3. Зачекати приблизно 10–15 хвилин і перевірити /sitemap.xml знову.
-
-Це потрібно для передачі XML-запитів до Apache. Якщо xml уже відсутній, список не змінювати. Не видаляти старий sitemap.xml навмання: спочатку зберегти резервну копію та перевірити, що нове правило працює.
-
-Пряма адреса index.php?route=extension/feed/sitemap_multi&amp;view=xml не має розширення .xml, тому для її використання в robots.txt змінювати список статичних файлів не потрібно. Вона залишається основною адресою пакета.
-
-Якщо сайт переведено з Apache на PHP-FPM або інший обробник, уточнити підтримку .htaccess у підтримки хостингу; наведене правило розраховане на Apache.
-
-Джерело: [документація Ukraine.com.ua про статичні файли](https://www.ukraine.com.ua/wiki/hosting/sites/my-sites/site-settings/static-files/).
-
-## 4. Перевірити після завантаження
-
-Підставити домен і відкрити:
-
-```text
-https://YOUR-DOMAIN/index.php?route=extension/feed/sitemap_multi&amp;view=html
+RewriteRule ^(.*)/?$ /$1?%1%2 [R=301,L]</code></pre>
+<p>Власне правило редиректу залишити таким, як воно було в проєкті. Якщо блоку немає, не додавати його: виключення не потрібне. Не вставляти окремий RewriteCond перед правилом sitemap.xml.</p>
+<h5>Особливість Ukraine.com.ua</h5>
+<p>Для звичайного хостингу Ukraine.com.ua використовувати наведені правила .htaccess. Nginx може віддавати статичні файли, оминаючи Apache. Писати власну конфігурацію Nginx для цього пакета не потрібно.</p>
+<p>Якщо /sitemap.xml показує старий XML або правило не спрацьовує:</p>
+<ol>
+<li>У панелі adm.tools відкрити налаштування потрібного сайту → «Статичні файли».</li>
+<li>Якщо у списку є розширення xml, прибрати лише його та зберегти. CSS, JS і зображення залишити статичними.</li>
+<li>Зачекати приблизно 10–15 хвилин і перевірити /sitemap.xml знову.</li>
+</ol>
+<p>Це потрібно для передачі XML-запитів до Apache. Якщо xml уже відсутній, список не змінювати. Не видаляти старий sitemap.xml навмання: спочатку зберегти резервну копію та перевірити, що нове правило працює.</p>
+<p>Пряма адреса index.php?route=extension/feed/sitemap_multi&amp;view=xml не має розширення .xml, тому для її використання в robots.txt змінювати список статичних файлів не потрібно. Вона залишається основною адресою пакета.</p>
+<p>Якщо сайт переведено з Apache на PHP-FPM або інший обробник, уточнити підтримку .htaccess у підтримки хостингу; наведене правило розраховане на Apache.</p>
+<p>Джерело: <a href="https://www.ukraine.com.ua/wiki/hosting/sites/my-sites/site-settings/static-files/" target="_blank" rel="noopener noreferrer">документація Ukraine.com.ua про статичні файли</a>.</p>
+<h4>4. Перевірити після завантаження</h4>
+<p>Підставити домен і відкрити:</p>
+<pre><code>https://YOUR-DOMAIN/index.php?route=extension/feed/sitemap_multi&amp;view=html
 https://YOUR-DOMAIN/index.php?route=extension/feed/sitemap_multi&amp;view=xml
-https://YOUR-DOMAIN/sitemap.xml
-```
-
-- HTML має показувати клікабельні частини та посилання на сторінки.
-- XML має показувати індекс; кожна дочірня карта повинна відкриватися без помилок.
-- `/sitemap.xml` має віддавати новий XML-індекс, а не старий файл.
-- У robots.txt має бути правильний домен; у Search Console подати адресу з `view=xml`.
-
-За наявності OCMOD/vQmod, CDN або кешів оновити їх і перевірити, що вони не повертають стару версію. HTML має `noindex,follow`; цей заголовок не повинен переноситися кешем на XML.
-
-Товари динамічної карти автоматично діляться приблизно по 500 URL з урахуванням мов. HTML показує по 200 посилань. Поділ нетоварного розділу `main` та старої статичної генерації не реалізований: для великих обсягів цих розділів потрібне окреме доопрацювання.
-
-
-HTML-перегляд групує записи за мовами та дозволяє фільтрувати їх. Лічильники стосуються лише відкритої частини карти. Мова визначається зі збігу loc і hreflang; спільні адреси позначаються кількома мовами, невизначені — окремою групою. XML не змінюється.
-</pre></section>
+https://YOUR-DOMAIN/sitemap.xml</code></pre>
+<ul>
+<li>HTML має показувати клікабельні частини та посилання на сторінки.</li>
+<li>XML має показувати індекс; кожна дочірня карта повинна відкриватися без помилок.</li>
+<li><code>/sitemap.xml</code> має віддавати новий XML-індекс, а не старий файл.</li>
+<li>У robots.txt має бути правильний домен; у Search Console подати адресу з <code>view=xml</code>.</li>
+</ul>
+<p>За наявності OCMOD/vQmod, CDN або кешів оновити їх і перевірити, що вони не повертають стару версію. HTML має <code>noindex,follow</code>; цей заголовок не повинен переноситися кешем на XML.</p>
+<p>Товари динамічної карти автоматично діляться приблизно по 500 URL з урахуванням мов. HTML показує по 200 посилань. Поділ нетоварного розділу <code>main</code> та старої статичної генерації не реалізований: для великих обсягів цих розділів потрібне окреме доопрацювання.</p>
+<p>HTML-перегляд групує записи за мовами та дозволяє фільтрувати їх. Лічильники стосуються лише відкритої частини карти. Мова визначається зі збігу loc і hreflang; спільні адреси позначаються кількома мовами, невизначені — окремою групою. XML не змінюється.</p></div></section>
 </main>
 <footer>OpenCart Modules Collection</footer>
 </body>

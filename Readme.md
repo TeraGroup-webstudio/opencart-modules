@@ -6,6 +6,7 @@
 
 | Модуль | Файли | Скриншоти |
 |--------|-------|-----------|
+| [Sitemap Multi — оновлення карти сайту](moduli/sitemap-upgrade-kit/) | [upload.zip](moduli/sitemap-upgrade-kit/upload.zip) + [інструкція](moduli/sitemap-upgrade-kit/MANUAL-CHANGES.md) | — |
 | [OAP PRO — MULTI AJAX опції](OAP%20PRO%20-%20MULTI%20AJAX%20опції%20як%20окремі%20товари%20з%20автоматичним%20зв'язуванням/) | ocmod | 6 |
 | [OCFilter — Модуль фільтру товарів](OCFilter%20-%20Модуль%20фільтру%20товарів/) | upload.zip | 10 |
 | [One Page Checkout 1.5](One%20Page%20Checkout%20-%20Просте%20оформлення%20замовлення%201.5/) | upload.zip | 12 |

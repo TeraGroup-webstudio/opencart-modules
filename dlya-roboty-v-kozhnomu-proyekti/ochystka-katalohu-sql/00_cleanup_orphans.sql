@@ -17,28 +17,28 @@
 
 SET @p_manual = '';   -- наприклад 'oc_'; порожньо = автовизначення
 
-SET NAMES utf8mb4;
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Автовизначення: префікс, для якого існують і product_to_category, і setting, і product
 SET @p = NULL;
 SELECT IF(COUNT(*) = 1, MIN(c.pfx), NULL) INTO @p
 FROM (
-  SELECT LEFT(t.TABLE_NAME, CHAR_LENGTH(t.TABLE_NAME) - CHAR_LENGTH('product_to_category')) AS pfx
+  SELECT LEFT((CONVERT(t.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci), CHAR_LENGTH((CONVERT(t.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci)) - CHAR_LENGTH('product_to_category')) AS pfx
   FROM information_schema.TABLES t
-  WHERE t.TABLE_SCHEMA = DATABASE() AND t.TABLE_NAME LIKE '%product\_to\_category'
+  WHERE (CONVERT(t.TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(t.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) LIKE '%product\_to\_category'
 ) c
 WHERE EXISTS (SELECT 1 FROM information_schema.TABLES s
-              WHERE s.TABLE_SCHEMA = DATABASE() AND s.TABLE_NAME = CONCAT(c.pfx, 'setting'))
+              WHERE (CONVERT(s.TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(s.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = CONCAT(c.pfx, 'setting'))
   AND EXISTS (SELECT 1 FROM information_schema.TABLES s
-              WHERE s.TABLE_SCHEMA = DATABASE() AND s.TABLE_NAME = CONCAT(c.pfx, 'product'));
-SET @p = IF(@p_manual <> '', @p_manual, @p);
+              WHERE (CONVERT(s.TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(s.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = CONCAT(c.pfx, 'product'));
+SET @p = CONVERT(IF(@p_manual <> '', @p_manual, @p) USING utf8mb4) COLLATE utf8mb4_unicode_ci;
 
 DROP PROCEDURE IF EXISTS lp_check_prefix;
 DELIMITER $$
 CREATE PROCEDURE lp_check_prefix()
 BEGIN
   IF @p IS NULL OR NOT EXISTS (SELECT 1 FROM information_schema.TABLES
-                               WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = CONCAT(@p, 'product')) THEN
+                               WHERE (CONVERT(TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = CONCAT(@p, 'product')) THEN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'Префікс таблиць не визначено: впишіть його в @p_manual (як DB_PREFIX). Нічого не видалено.';
   END IF;
@@ -66,7 +66,7 @@ SELECT @p AS `префікс таблиць`;
 
 -- @p визначено на початку файлу
 
-SET NAMES utf8mb4;
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 DROP PROCEDURE IF EXISTS lp_exec;
 DROP PROCEDURE IF EXISTS lp_orphans;
@@ -75,19 +75,19 @@ CREATE TEMPORARY TABLE lp_report (
   tbl VARCHAR(64) NOT NULL,
   what VARCHAR(255) NOT NULL,
   removed INT NOT NULL
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DELIMITER $$
 
 -- Виконує запит, якщо існують обидві таблиці (назви БЕЗ префікса; p_need може бути '').
 -- У запиті {p} замінюється на префікс. Кількість змінених рядків пишеться у звіт.
-CREATE PROCEDURE lp_exec(IN p_table VARCHAR(64) CHARACTER SET utf8mb4, IN p_need VARCHAR(64) CHARACTER SET utf8mb4, IN p_what VARCHAR(255) CHARACTER SET utf8mb4, IN p_sql TEXT CHARACTER SET utf8mb4)
+CREATE PROCEDURE lp_exec(IN p_table VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, IN p_need VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, IN p_what VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, IN p_sql TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci)
 BEGIN
   DECLARE v_rows INT DEFAULT 0;
   IF EXISTS (SELECT 1 FROM information_schema.TABLES
-             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = CONCAT(@p, p_table))
+             WHERE (CONVERT(TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = CONCAT(@p, p_table))
      AND (p_need = '' OR EXISTS (SELECT 1 FROM information_schema.TABLES
-             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = CONCAT(@p, p_need))) THEN
+             WHERE (CONVERT(TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = CONCAT(@p, p_need))) THEN
     SET @lp_sql = REPLACE(p_sql, '{p}', @p);
     PREPARE lp_stmt FROM @lp_sql;
     EXECUTE lp_stmt;
@@ -101,29 +101,29 @@ END$$
 -- під LIKE p_like, але НЕ під REGEXP p_except, видаляє рядки, де p_col <> 0
 -- і такого значення немає в p_entity.p_entity_col.
 CREATE PROCEDURE lp_orphans(
-  IN p_col VARCHAR(64) CHARACTER SET utf8mb4, IN p_entity VARCHAR(64) CHARACTER SET utf8mb4, IN p_entity_col VARCHAR(64) CHARACTER SET utf8mb4,
-  IN p_like VARCHAR(64) CHARACTER SET utf8mb4, IN p_except VARCHAR(128) CHARACTER SET utf8mb4
+  IN p_col VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, IN p_entity VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, IN p_entity_col VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  IN p_like VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, IN p_except VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 )
 BEGIN
   DECLARE v_done INT DEFAULT 0;
-  DECLARE v_table VARCHAR(64) CHARACTER SET utf8mb4;
+  DECLARE v_table VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   DECLARE v_rows INT;
   -- Порожній REGEXP падає на MySQL 5.7 / старих MariaDB (#1139), тому
   -- "без винятків" = шаблон, який ніколи не збігається з назвою таблиці
-  DECLARE v_except VARCHAR(128) CHARACTER SET utf8mb4 DEFAULT '^#never#$';
+  DECLARE v_except VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '^#never#$';
   DECLARE cur CURSOR FOR
-    SELECT c.TABLE_NAME
+    SELECT (CONVERT(c.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci)
     FROM information_schema.COLUMNS c
     JOIN information_schema.TABLES t
-      ON t.TABLE_SCHEMA = c.TABLE_SCHEMA AND t.TABLE_NAME = c.TABLE_NAME AND t.TABLE_TYPE = 'BASE TABLE'
-    WHERE c.TABLE_SCHEMA = DATABASE()
-      AND c.COLUMN_NAME = p_col
-      AND c.TABLE_NAME LIKE CONCAT(REPLACE(@p, '_', '\\_'), p_like)
-      AND c.TABLE_NAME <> CONCAT(@p, p_entity)
-      AND c.TABLE_NAME NOT LIKE CONCAT(REPLACE(@p, '_', '\\_'), 'order%')
-      AND c.TABLE_NAME NOT LIKE CONCAT(REPLACE(@p, '_', '\\_'), 'return%')
+      ON (CONVERT(t.TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = (CONVERT(c.TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) AND (CONVERT(t.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = (CONVERT(c.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) AND (CONVERT(t.TABLE_TYPE USING utf8mb4) COLLATE utf8mb4_unicode_ci) = 'BASE TABLE'
+    WHERE (CONVERT(c.TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE()
+      AND (CONVERT(c.COLUMN_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = p_col
+      AND (CONVERT(c.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) LIKE CONCAT(REPLACE(@p, '_', '\\_'), p_like)
+      AND (CONVERT(c.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) <> CONCAT(@p, p_entity)
+      AND (CONVERT(c.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) NOT LIKE CONCAT(REPLACE(@p, '_', '\\_'), 'order%')
+      AND (CONVERT(c.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) NOT LIKE CONCAT(REPLACE(@p, '_', '\\_'), 'return%')
       -- CONVERT: у MySQL 8 information_schema в utf8mb3, а REGEXP вимагає однакове кодування (#3995)
-      AND CONVERT(SUBSTRING(c.TABLE_NAME, CHAR_LENGTH(@p) + 1) USING utf8mb4)
+      AND CONVERT(SUBSTRING((CONVERT(c.TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci), CHAR_LENGTH(@p) + 1) USING utf8mb4)
           NOT REGEXP CONVERT(v_except USING utf8mb4);
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_done = 1;
 
@@ -132,7 +132,7 @@ BEGIN
   END IF;
 
   IF EXISTS (SELECT 1 FROM information_schema.TABLES
-             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = CONCAT(@p, p_entity)) THEN
+             WHERE (CONVERT(TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = CONCAT(@p, p_entity)) THEN
     OPEN cur;
     read_loop: LOOP
       FETCH cur INTO v_table;
@@ -233,7 +233,7 @@ CALL lp_exec('seo_url', 'ocfilter_page', 'ЧПУ SEO-сторінок OCFilter �
   'DELETE s FROM `{p}seo_url` s LEFT JOIN `{p}ocfilter_page` e ON e.page_id = CAST(SUBSTRING_INDEX(s.`query`, ''='', -1) AS UNSIGNED) WHERE s.`query` LIKE ''ocfilter\\_page\\_id=%'' AND e.page_id IS NULL');
 -- Якщо таблиці OCFilter-сторінок немає взагалі — її ЧПУ теж сміття
 CALL lp_exec('seo_url', '', 'ЧПУ OCFilter, коли модуля немає',
-  'DELETE FROM `{p}seo_url` WHERE `query` LIKE ''ocfilter\\_page\\_id=%'' AND NOT EXISTS (SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ''{p}ocfilter_page'')');
+  'DELETE FROM `{p}seo_url` WHERE `query` LIKE ''ocfilter\\_page\\_id=%'' AND NOT EXISTS (SELECT 1 FROM information_schema.TABLES WHERE (CONVERT(TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = ''{p}ocfilter_page'')');
 CALL lp_exec('seo_url', '', 'порожні ЧПУ',
   'DELETE FROM `{p}seo_url` WHERE TRIM(`keyword`) = '''' OR TRIM(`query`) = ''''');
 CALL lp_exec('seo_url', '', 'дублікати (той самий магазин + мова + сторінка), лишаємо найстаріший',

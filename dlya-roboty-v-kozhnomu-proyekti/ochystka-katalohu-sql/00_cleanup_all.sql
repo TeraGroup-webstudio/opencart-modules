@@ -425,7 +425,7 @@ CALL lp_exec('seo_url', 'ocfilter_page', 'ЧПУ SEO-сторінок OCFilter �
 CALL lp_exec('seo_url', '', 'ЧПУ OCFilter, коли модуля немає',
   'DELETE FROM `{p}seo_url` WHERE `query` LIKE ''ocfilter\\_page\\_id=%'' AND NOT EXISTS (SELECT 1 FROM information_schema.TABLES WHERE (CONVERT(TABLE_SCHEMA USING utf8mb4) COLLATE utf8mb4_unicode_ci) = DATABASE() AND (CONVERT(TABLE_NAME USING utf8mb4) COLLATE utf8mb4_unicode_ci) = ''{p}ocfilter_page'')');
 CALL lp_exec('seo_url', '', 'порожні ЧПУ',
-  'DELETE FROM `{p}seo_url` WHERE TRIM(`keyword`) = '''' OR TRIM(`query`) = ''''');
+  'DELETE FROM `{p}seo_url` WHERE (TRIM(`keyword`) = '''' AND TRIM(`query`) <> ''common/home'') OR TRIM(`query`) = ''''');
 CALL lp_exec('seo_url', '', 'дублікати (той самий магазин + мова + сторінка), лишаємо найстаріший',
   'DELETE s FROM `{p}seo_url` s JOIN `{p}seo_url` d ON d.store_id = s.store_id AND d.language_id = s.language_id AND d.`query` = s.`query` AND d.seo_url_id < s.seo_url_id');
 

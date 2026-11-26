@@ -24,7 +24,3 @@
 
     return true;
   }
-
------
-
-Змінити в модульній модифікації "Default.ocmod" текст, замість "text_home" написати "text_yes".

@@ -2,10 +2,6 @@
 
 🛒 [Придбати на OpenCart Forum](https://opencartforum.com/files/file/9221-oap-pro-multi-ajax-opciyi-yak-okremi-tovari-z-avtomatichnim-zvyazuvannyam/)
 
-## Встановлення
-
-Завантажити `Default.ocmod.zip` через **Адмінка → Установка доповнень**.
-
 ## Відома проблема: відсутня функція `isMainOapProduct`
 
 Якщо виникає помилка:
@@ -42,7 +38,3 @@ public function isMainOapProduct($product_id) {
     return true;
 }
 ```
-
-## Додатково
-
-Змінити в модульній модифікації `Default.ocmod` текст: замість `text_home` написати `text_yes`.
